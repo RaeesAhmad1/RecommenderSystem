@@ -1,0 +1,189 @@
+﻿@model IEnumerable<InventoryManagement.Models.DBModels.Customer>
+@using InventoryManagement.Models.DBModels;
+@{
+    ViewBag.Title = "CustomerList";
+    Layout = "~/Views/Shared/_PanelLayout.cshtml";
+    Role role = Session["Role"] as Role;
+
+    string query = $@"
+Select SC.ID, SC.Address, SC.CompanyName,SC.CreditLimit,
+SC.DisplayName,SC.Email, SC.FirstName,SC.LastName,SC.Mobile,SC.Phone,
+ ISNULL(SUM(SI.AmountPayable),0) as AmountPayable,
+ ISNULL(SUM(PP.Amount), 0) as AmountPaid,
+ ( ISNULL(SUM(SI.AmountPayable),0)  - ISNULL(SUM(PP.Amount), 0) ) AS CreditAmount
+From Sales.Customer SC  
+LEFT JOIN Sales.Invoice SI ON SI.CustomerID = SC.ID
+LEFT JOIN Payments.Payment PP ON PP.CustomerID = SC.ID
+Group by SC.ID, SC.Address, SC.CompanyName,SC.CreditAmount,SC.CreditLimit,
+SC.DisplayName,SC.Email, SC.FirstName,SC.LastName,SC.Mobile,SC.Phone
+";
+    var CustomerList = DBHelper.QueryList(query);
+}
+
+@if (role.CanViewCustomer)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="example-box-wrapper">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3 class="title-hero">Customer Details</h3>
+                            </div>
+
+                            @if (role.CanAddCustomer)
+                            {
+                                <div class="col-md-6">
+                                    <div class="pull-right">
+                                        <a href="@Url.Action("AddCustomer","Customer")" class="btn btn-primary" id="AddProductBtn">
+                                            Add Customer
+                                            <div class="ripple-wrapper"></div>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                        <div id="datatable-responsive_wrapper" class="dataTables_wrapper form-inline">
+                            <table id="UserList" class="table table-striped table-bordered responsive no-wrap DataTable dtr-inline" role="grid" aria-describedby="datatable-responsive_info" style="width: 100%;" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Display Name</th>
+                                        <th>Company Name</th>
+                                        <th>Email</th>
+                                        <th>Mobile</th>
+                                        <th>Amount Payable</th>
+                                        <th>Amount Paid</th>
+                                        <th>Credit Due</th>
+
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var element in CustomerList)
+                                    {
+                                    <tr>
+                                        <td>@element["FirstName"]</td>
+                                        <td>@element["LastName"]</td>
+                                        <td>@element["DisplayName"]</td>
+                                        <td>@element["CompanyName"]</td>
+                                        <td>@element["Email"]</td>
+                                        <td>@element["Mobile"]</td>
+                                        <td>@element["AmountPayable"]</td>
+                                        <td>@element["AmountPaid"]</td>
+                                        @{
+                                            var AmountLeft = double.Parse(element["AmountPayable"]) - double.Parse(element["AmountPaid"]);
+                                            if (AmountLeft < 0)
+                                            {
+                                                AmountLeft = 0;
+                                            }
+                                        }
+                                        <td>
+                                            @if (AmountLeft != 0)
+                                            {
+                                                <p style="color:red">@AmountLeft</p>
+                                            }
+                                            else
+                                            {
+                                                <p style="color:green">@AmountLeft</p>
+                                            }
+                                        </td>
+
+                                        <td>
+                                            <a href="/Customer/CustomerHistory?ID=@element["ID"]"><i style="color:#808080" class="glyph-icon tooltip-button icon-history" title="" data-original-title="History" aria-describedby="tooltip854738"></i></a>
+                                            @if (role.CanUpdateUsers)
+    {
+                                        <a href="@Url.Action("AddCustomer", "Customer", new { id = element["ID"] })"><i style="color:blue" class="glyph-icon tooltip-button icon-pencil-square-o" title="" data-original-title="Edit" aria-describedby="tooltip854738"></i></a>
+}
+                                            @if (role.CanDeleteUsers)
+    {
+                                        <a role="button" data-id="@element["ID"]" class="DeleteCustomerBtn" href="#/"><i style="color:red" class="glyph-icon tooltip-button icon-trash" title="" data-original-title="Delete" aria-describedby="tooltip991223"></i></a>
+}
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section ViewScript{
+    <script>
+
+
+        //$(".InvoicePopover").popover();
+        @*$(".InvoicePopover").click(function () {
+            var el = $(this);
+            var customerID = $(this).data("id");
+            $.post("@Url.Action("GetUnClearedInvoices", "Customer")", { CustomerID: customerID }).then(function (resp) {
+                console.log(resp);
+                var generatedHtml = 
+`<table class='table table-striped'>
+<tr>
+    <th>Invoice ID</th>
+    <th>Total Amount</th>
+    <th>Paid Amount</th>
+</tr>`;
+                $.each(resp, function (i, v) {
+                    generatedHtml += 
+                        `
+    <tr>
+    <td>${v.ID}</td>
+<td>${v.AmountPayable}</td>
+<td>${v.PaidAmount}</td>
+    </tr>
+    `
+                });
+
+                generatedHtml += `</table>`;
+                $(el).popover("destroy");
+    
+
+                $(el).popover({
+                    title: "Invoices and Bills",
+                    html: true,
+                    content: generatedHtml
+                });
+                $(el).popover("show");
+            });
+        });*@
+
+
+
+
+        $(".DeleteCustomerBtn").click(function () {
+            var id = $(this).data("id");
+            console.log("ID :" + id);
+            bootbox.confirm({
+                title: "<h4 style='color:red'>Caution!</h4>",
+                message: "Deleting this user may end up deleting all information about this user from the system. do you still want to continue?",
+                buttons: {
+                    cancel: {
+                        label: '<i class="fa fa-times"></i> Cancel'
+                    },
+                    confirm: {
+                        label: '<i class="fa fa-check"></i> Confirm'
+                    }
+                },
+                callback: function (result) {
+                    if (result == true) {
+                        $.post("@Url.Action("DeleteCustomer","Customer")", { ID: id }).then(function () {
+                            window.location.reload();
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+}
+

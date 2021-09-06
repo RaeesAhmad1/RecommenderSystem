@@ -1,0 +1,140 @@
+﻿@model List<InventoryManagement.ViewModels.Packaging_LV>
+@using InventoryManagement.Models.DBModels;
+@{
+    ViewBag.Title = "Packaging";
+    Layout = "~/Views/Shared/_PanelLayout.cshtml";
+    var Role = Session["Role"] as Role;
+}
+
+@if (Role.CanChangeProductSettings)
+{
+
+    <div id="page-title">
+        <h2>Packagings</h2>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="title-hero">Packaging</h3>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="pull-right">
+                                <a href="#/" class="btn btn-primary" id="AddPackagingBtn">
+                                    Add Packaging
+                                    <div class="ripple-wrapper"></div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="example-box-wrapper" id="PackagingListTable">
+                        <div id="datatable-responsive_wrapper" class="dataTables_wrapper form-inline">
+                            <table id="datatable-responsive" class="table table-striped table-bordered responsive no-wrap DataTable" role="grid" aria-describedby="datatable-responsive_info" style="width: 100%;" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Total Products</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var element in Model)
+                                    {
+                                        <tr>
+                                            <td>@element.Name</td>
+                                            <td>@element.TotalProducts</td>
+                                            <td>
+                                                <a class="EditPackagingBtn" data-id="@element.ID" data-name="@element.Name" href="#/"><i class="glyph-icon tooltip-button icon-pencil-square-o" style="color:blue" title="" data-original-title="Edit" aria-describedby="tooltip854738"></i></a>
+                                                <a class="DeletePackagingBtn" data-id="@element.ID" href="#/"><i class="glyph-icon tooltip-button icon-trash" style="color:red" title="" data-original-title="Delete" aria-describedby="tooltip991223"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AddPackagingModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                @using (Html.BeginForm("AddPackaging", "Products", FormMethod.Post))
+                {
+                    <div class="modal-header">
+                        <h4>Add Packaging</h4>
+                    </div>
+                    <div class="modal-body">
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            <label>Packaging Name</label>
+                            <input type="text" class="form-control" id="Name" name="Name" />
+                            <input type="hidden" id="PackagingID" name="ID" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" value="Create" class="btn btn-primary" id="AddEditPackagingBtn" />
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="ConfirmDeleteModal">
+        <form id="DeletePackagingForm" method="post" action="/Products/DeletePackaging">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Delete Packaging</h3>
+                        <input type="hidden" id="DeletePackagingId" name="PackagingId" />
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" id="ConfirmDelete" type="submit">Delete</button>
+                        <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @section ViewScript{
+        <script>
+            $(function () {
+                $("#AddPackagingBtn").click(function () {
+                    $("#AddPackagingModal .modal-header h4").html("Add Packaging");
+                    $("#AddEditPackagingBtn").val("Add");
+                    $("#AddPackagingModal").modal("show");
+                });
+
+                $(".EditPackagingBtn").click(function () {
+                    $.get("/Products/GetPackagingDetails", { PackagingID: $(this).data("id") }).then(function (resp) {
+                        $("#AddPackagingModal #PackagingID").val(resp.ID);
+                        $("#AddPackagingModal #Name").val(resp.Name);
+                        $("#AddPackagingModal .modal-header h4").html("Edit Packaging");
+                        $("#AddEditPackagingBtn").val("Update");
+                        $("#AddPackagingModal").modal("show");
+                    });
+                });
+
+                $(".DeletePackagingBtn").click(function () {
+                    var id = $(this).data("id");
+                    $("#DeletePackagingId").val(id);
+                    $("#ConfirmDeleteModal").modal("show");
+                });
+            });
+        </script>
+    }
+
+}
+

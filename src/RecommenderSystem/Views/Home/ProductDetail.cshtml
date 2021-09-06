@@ -1,0 +1,744 @@
+﻿@using InventoryManagement.Models.Common
+@using InventoryManagement.Models.Repositories
+@model InventoryManagement.Controllers.ProductDetailPage
+@{
+    Layout = "~/Views/Shared/_WebLayout.cshtml";
+    var repo = new ProductRepository();
+    var user = Session["User"] as SessionUser;
+    var wishListItems = new List<int>();
+    if (user != null)
+    {
+
+        wishListItems = repo.GetWishList(user.Id);
+    }
+
+    var goodReviewCount = Model.Reviews.Count(x => x.Rating >= 3);
+    var badCount = Model.Reviews.Count(x => x.Rating < 3);
+    var reviewCounts = Model.Reviews.Count == 0 ? 1 : Model.Reviews.Count;
+    double percentage = ((double)goodReviewCount / (double)reviewCounts) * 100;
+}
+
+
+<!-- Start of Page Content -->
+<div class="page-content">
+    <div class="container">
+        <div class="row gutter-lg">
+            <div class="main-content">
+
+                <ul class="nav nav-tabs nav-fill">
+                    <li class="active"><a data-toggle="tab" href="#home">Product Specifications</a></li>
+
+                    @if (user != null)
+                    {
+
+
+
+
+                        <li><a data-toggle="tab" href="#profile">Similar but cheaper</a></li>
+
+
+                        <li><a data-toggle="tab" href="#profile1">Same Vendor</a></li>
+
+
+                        <li><a data-toggle="tab" href="#profile2">Similar Specs</a></li>
+
+
+                        <li><a data-toggle="tab" href="#profile3">Best Selling</a></li>
+
+
+                        <li><a data-toggle="tab" href="#profile4">Wish List</a></li>
+
+                    }
+                    else
+                    {
+                        <li><a href="#/" class="loginPopup">Similar but cheaper</a></li>
+                        <li><a href="#/" class="loginPopup">Same Vendor</a></li>
+                        <li><a href="#/" class="loginPopup">Similar Specs</a></li>
+                        <li><a href="#/" class="loginPopup">Best Selling</a></li>
+                        <li><a href="#/" class="loginPopup">Wish List</a></li>
+                    }
+
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="home">
+                        <div class="product product-single row">
+                            <div class="col-md-6 mb-6">
+                                <div class="product-gallery product-gallery-video">
+                                    <div class="product-single-carousel owl-carousel owl-theme owl-nav-inner row cols-1 gutter-no">
+                                        <figure class="product-image">
+                                            <img src="@((!string.IsNullOrWhiteSpace(Model.Product.ImagePath)) ? Url.Content(Model.Product.ImagePath) : "")"
+                                                 data-zoom-image="@((!string.IsNullOrWhiteSpace(Model.Product.ImagePath)) ? Url.Content(Model.Product.ImagePath) : "")"
+                                                 alt="Pink Sport Shoes" width="800" height="900">
+                                        </figure>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4 mb-md-6">
+                                <div class="product-details">
+                                    <h1 class="product-title">@Model.Product.Name</h1>
+                                    <div class="product-bm-wrapper">
+                                        <figure class="brand">
+                                            <img src="@((!string.IsNullOrWhiteSpace(Model.Product.ImagePath)) ? Url.Content(Model.Product.ImagePath) : "")" alt="Brand"
+                                                 width="105" height="48" />
+                                        </figure>
+                                        <div class="product-meta">
+                                            <div class="product-categories">
+                                                Category:
+                                                <span class="product-category"><a href="#">@Model.Product.CategoryName</a></span>
+                                            </div>
+                                            <div class="product-sku">
+                                                SKU: <span>@Model.Product.SKU</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="product-divider">
+
+                                    <div class="product-price"><ins class="new-price">£@Model.Product.RetailPrice.00</ins></div>
+
+                                    <div class="ratings-container">
+                                        <div class="ratings-full">
+                                            <span class="ratings" style="width: @(Model.Product.Rating * 20)%;"></span>
+                                            <span class="tooltiptext tooltip-top"></span>
+                                        </div>
+                                        <a href="#product-tab-reviews" class="rating-reviews">(@Model.Product.Reviews Reviews)</a>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion accordion-simple mb-9">
+                            <div class="card">
+                                <div class="card-header ls-normal">
+                                    <a href="#product-tab-description" class="collapse">Description</a>
+                                </div>
+                                <div class="card-body expanded" id="product-tab-description">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <p class="mb-4">
+                                                @Model.Product.Description
+                                            </p>
+                                            <ul class="list-type-check list-style-none pl-0">
+                                                <li>
+                                                    Nunc nec porttitor turpis. In eu risus enim. In vitae mollis
+                                                    elit.
+                                                </li>
+                                                <li>Vivamus finibus vel mauris ut vehicula.</li>
+                                                <li>
+                                                    Nullam a magna porttitor, dictum risus nec, faucibus sapien.
+                                                </li>
+                                                <li>
+                                                    Ultrices eros in cursus turpis massa tincidunt ante in nibh
+                                                    mauris.
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header ls-normal">
+                                    <a href="#product-tab-reviews" class="expand">Customer Reviews(@Model.Reviews.Count)</a>
+                                </div>
+                                <div class="card-body collapsed" id="product-tab-reviews">
+                                    <div class="row mb-4">
+                                        <div class="col-xl-4 col-lg-5 mb-4">
+                                            <div class="ratings-wrapper">
+                                                <div class="avg-rating-container">
+                                                    <h4 class="avg-mark font-weight-bolder ls-50">@Model.Product.Rating</h4>
+                                                    <div class="avg-rating">
+                                                        <p class="text-dark mb-1">Average Rating</p>
+                                                        <div class="ratings-container">
+                                                            <div class="ratings-full">
+                                                                <span class="ratings" style="width: @(Model.Product.Rating * 20)%;"></span>
+                                                                <span class="tooltiptext tooltip-top"></span>
+                                                            </div>
+                                                            <a href="#" class="rating-reviews">(@Model.Product.Reviews Reviews)</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="ratings-value d-flex align-items-center text-dark ls-25">
+
+                                                    <span class="text-dark font-weight-bold">@(percentage)%</span>Recommended<span class="count">(@goodReviewCount of @Model.Reviews.Count)</span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-8 col-lg-7 mb-4">
+                                            <div class="review-form-wrapper">
+                                                <h3 class="title tab-pane-title font-weight-bold mb-1">
+                                                    Submit Your
+                                                    Review
+                                                </h3>
+                                                <p class="mb-3">
+                                                    Your email address will not be published. Required
+                                                    fields are marked *
+                                                </p>
+                                                <form action="@Url.Action("ProductDetail", "Home")" method="post" class="review-form">
+                                                    <div class="rating-form">
+                                                        <input type="hidden" name="ProductId" value="@Model.Product.ID">
+                                                        <label for="rating">Your Rating Of This Product :</label>
+                                                        <span class="rating-stars">
+
+                                                            <a class="star-1 stars" data-val="1" href="#/">1</a>
+                                                            <a class="star-2 stars" data-val="2" href="#/">2</a>
+                                                            <a class="star-3 stars" data-val="3" href="#/">3</a>
+                                                            <a class="star-4 stars" data-val="4" href="#/">4</a>
+                                                            <a class="star-5 stars" data-val="5" href="#/">5</a>
+                                                        </span>
+
+                                                        <select name="Rating" id="rating" required>
+                                                            <option value="5">Perfect</option>
+                                                            <option value="4">Good</option>
+                                                            <option value="3">Average</option>
+                                                            <option value="2">Not that bad</option>
+                                                            <option value="1">Very poor</option>
+                                                        </select>
+                                                    </div>
+                                                    <textarea cols="30" rows="6"
+                                                              placeholder="Write Your Review Here..." name="Review" class="form-control"
+                                                              id="review"></textarea>
+                                                    <div class="row gutter-md">
+                                                        <div class="col-md-6">
+                                                            <input type="text" class="form-control"
+                                                                   placeholder="Your Name" name="CustomerName" id="author">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <input type="text" class="form-control"
+                                                                   placeholder="Your Email" name="Email" id="email_1">
+                                                        </div>
+                                                    </div>
+
+                                                    <button type="submit" class="btn btn-dark">
+                                                        Submit
+                                                        Review
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab tab-nav-boxed tab-nav-outline tab-nav-center">
+                                        <ul class="comments list-style-none">
+                                            <li class="comment">
+                                                @foreach (var comment in Model.Reviews)
+                                                {
+                                                    <div class="comment-body">
+                                                        <div class="comment-content">
+                                                            <h4 class="comment-author">
+                                                                <a href="#">@comment.CustomerName (@comment.Email)</a>
+                                                                <span class="comment-date">
+                                                                    @comment.TimeStamp.ToString("MMMM dd yyyy hh:mm tt")
+                                                                </span>
+                                                            </h4>
+                                                            <div class="ratings-container comment-rating">
+                                                                <div class="ratings-full">
+                                                                    <span class="ratings"
+                                                                          style="width: @(comment.Rating * 20)%;"></span>
+                                                                    <span class="tooltiptext tooltip-top"></span>
+                                                                </div>
+                                                            </div>
+                                                            <p>
+                                                                @comment.Review
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="tab-pane fade" id="profile">
+                        <section class="vendor-product-section">
+                            <div class="title-link-wrapper mb-4">
+                                <h4 class="title text-left">Similar Products with less prices</h4>
+                            </div>
+                            <div class="owl-carousel owl-theme row cols-lg-3 cols-md-4 cols-sm-3 cols-2"
+                                 data-owl-options="{
+                                    'nav': false,
+                                    'dots': false,
+                                    'margin': 20,
+                                    'responsive': {
+                                        '0': {
+                                            'items': 2
+                                        },
+                                        '576': {
+                                            'items': 3
+                                        },
+                                        '768': {
+                                            'items': 4
+                                        },
+                                        '992': {
+                                            'items': 3
+                                        }
+                                    }
+                                }">
+
+                                @foreach (var product in Model.DiscountedProducts)
+                                {
+
+                                    <div class="product">
+                                        <figure class="product-media">
+                                            <a href="@Url.Action("ProductDetail", "Home", new {Id = product.ID})">
+                                                <img src="@(!string.IsNullOrWhiteSpace(product.ImagePath) ? Url.Content(product.ImagePath) : "")" alt="Product"
+                                                     width="300" height="338" />
+
+                                            </a>
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-cart w-icon-cart"
+                                                   title="Add to cart"></a>
+                                                @if (user != null)
+                                                {
+                                                    <a href="#/" data-prod-id="@product.ID" class="btn-product-icon btn-wishlist1 @(wishListItems.Contains(product.ID) ? "added w-icon-heart-full" : "w-icon-heart")" title="Add to wishlist"><span></span></a>
+                                                }
+                                                <a href="#" class="btn-product-icon btn-compare w-icon-compare"
+                                                   title="Add to Compare"></a>
+                                            </div>
+
+                                        </figure>
+                                        <div class="product-details">
+                                            <div class="product-cat">
+                                                <a href="#/">@product.CategoryName</a>
+                                            </div>
+                                            <h4 class="product-name">
+                                                <a href="#/">@product.Name</a>
+                                            </h4>
+                                            <div class="ratings-container">
+                                                <div class="ratings-full">
+                                                    <span class="ratings" style="width: @(product.Rating * 20)%;"></span>
+                                                    <span class="tooltiptext tooltip-top"></span>
+                                                </div>
+                                                <a href="@Url.Action("ProductDetail", "Home", new {Id = product.ID})" class="rating-reviews">(@product.Reviews reviews)</a>
+                                            </div>
+                                            <div class="product-pa-wrapper">
+                                                <div class="product-price">£@product.RetailPrice</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+
+                            </div>
+                        </section>
+
+                    </div>
+                    <div class="tab-pane fade" id="profile1">
+                        <section class="vendor-product-section">
+                            <div class="title-link-wrapper mb-4">
+                                <h4 class="title text-left">More Products From This Vendor</h4>
+                            </div>
+                            <div class="owl-carousel owl-theme row cols-lg-3 cols-md-4 cols-sm-3 cols-2"
+                                 data-owl-options="{
+                                    'nav': false,
+                                    'dots': false,
+                                    'margin': 20,
+                                    'responsive': {
+                                        '0': {
+                                            'items': 2
+                                        },
+                                        '576': {
+                                            'items': 3
+                                        },
+                                        '768': {
+                                            'items': 4
+                                        },
+                                        '992': {
+                                            'items': 3
+                                        }
+                                    }
+                                }">
+
+                                @foreach (var product in Model.VendorProducts)
+                                {
+
+                                    <div class="product">
+                                        <figure class="product-media">
+                                            <a href="@Url.Action("ProductDetail", "Home", new {Id = product.ID})">
+                                                <img src="@(!string.IsNullOrWhiteSpace(product.ImagePath) ? Url.Content(product.ImagePath) : "")" alt="Product"
+                                                     width="300" height="338" />
+
+                                            </a>
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-cart w-icon-cart"
+                                                   title="Add to cart"></a>
+                                                @if (user != null)
+                                                {
+                                                    <a href="#/" data-prod-id="@product.ID" class="btn-product-icon btn-wishlist1 @(wishListItems.Contains(product.ID) ? "added w-icon-heart-full" : "w-icon-heart")" title="Add to wishlist"><span></span></a>
+                                                }
+                                                <a href="#" class="btn-product-icon btn-compare w-icon-compare"
+                                                   title="Add to Compare"></a>
+                                            </div>
+
+                                        </figure>
+                                        <div class="product-details">
+                                            <div class="product-cat">
+                                                <a href="#/">@product.CategoryName</a>
+                                            </div>
+                                            <h4 class="product-name">
+                                                <a href="#/">@product.Name</a>
+                                            </h4>
+                                            <div class="ratings-container">
+                                                <div class="ratings-full">
+                                                    <span class="ratings" style="width: @(product.Rating * 20)%;"></span>
+                                                    <span class="tooltiptext tooltip-top"></span>
+                                                </div>
+                                                <a href="@Url.Action("ProductDetail", "Home", new {Id = product.ID})" class="rating-reviews">(@product.Reviews reviews)</a>
+                                            </div>
+                                            <div class="product-pa-wrapper">
+                                                <div class="product-price">£@product.RetailPrice</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="tab-pane fade" id="profile2">
+                        <section class="related-product-section">
+                            <div class="title-link-wrapper mb-4">
+                                <h4 class="title">Related Products</h4>
+                            </div>
+                            <div class="owl-carousel owl-theme row cols-lg-3 cols-md-4 cols-sm-3 cols-2"
+                                 data-owl-options="{
+                                    'nav': false,
+                                    'dots': false,
+                                    'margin': 20,
+                                    'responsive': {
+                                        '0': {
+                                            'items': 2
+                                        },
+                                        '576': {
+                                            'items': 3
+                                        },
+                                        '768': {
+                                            'items': 4
+                                        },
+                                        '992': {
+                                            'items': 3
+                                        }
+                                    }
+                                }">
+
+                                @foreach (var product in Model.RelatedProducts)
+                                {
+
+                                    <div class="product">
+                                        <figure class="product-media">
+                                            <a href="@Url.Action("ProductDetail", "Home", new {Id = product.ID})">
+                                                <img src="@(!string.IsNullOrWhiteSpace(product.ImagePath) ? Url.Content(product.ImagePath) : "")" alt="Product"
+                                                     width="300" height="338" />
+
+                                            </a>
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-cart w-icon-cart"
+                                                   title="Add to cart"></a>
+                                                @if (user != null)
+                                                {
+                                                    <a href="#/" data-prod-id="@product.ID" class="btn-product-icon btn-wishlist1 @(wishListItems.Contains(product.ID) ? "added w-icon-heart-full" : "w-icon-heart")" title="Add to wishlist"><span></span></a>
+                                                }
+                                                <a href="#" class="btn-product-icon btn-compare w-icon-compare"
+                                                   title="Add to Compare"></a>
+                                            </div>
+
+                                        </figure>
+                                        <div class="product-details">
+                                            <div class="product-cat">
+                                                <a href="#/">@product.CategoryName</a>
+                                            </div>
+                                            <h4 class="product-name">
+                                                <a href="#/">@product.Name</a>
+                                            </h4>
+                                            <div class="ratings-container">
+                                                <div class="ratings-full">
+                                                    <span class="ratings" style="width: @(product.Rating * 20)%;"></span>
+                                                    <span class="tooltiptext tooltip-top"></span>
+                                                </div>
+                                                <a href="@Url.Action("ProductDetail", "Home", new {Id = product.ID})" class="rating-reviews">(@product.Reviews reviews)</a>
+                                            </div>
+                                            <div class="product-pa-wrapper">
+                                                <div class="product-price">£@product.RetailPrice</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+
+
+
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="tab-pane fade" id="profile3">
+                        <section class="related-product-section">
+                            <div class="title-link-wrapper mb-4">
+                                <h4 class="title">Featured Products</h4>
+                            </div>
+                            <div class="owl-carousel owl-theme row cols-lg-3 cols-md-4 cols-sm-3 cols-2"
+                                 data-owl-options="{
+                                    'nav': false,
+                                    'dots': false,
+                                    'margin': 20,
+                                    'responsive': {
+                                        '0': {
+                                            'items': 2
+                                        },
+                                        '576': {
+                                            'items': 3
+                                        },
+                                        '768': {
+                                            'items': 4
+                                        },
+                                        '992': {
+                                            'items': 3
+                                        }
+                                    }
+                                }">
+
+                                @foreach (var product in Model.FeaturedProducts)
+                                {
+                                    <div class="product">
+                                        <figure class="product-media">
+                                            <a href="@Url.Action("ProductDetail", "Home", new {Id = product.ID})">
+                                                <img src="@(!string.IsNullOrWhiteSpace(product.ImagePath) ? Url.Content(product.ImagePath) : "")" alt="Product"
+                                                     width="300" height="338" />
+
+                                            </a>
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-cart w-icon-cart"
+                                                   title="Add to cart"></a>
+                                                @if (user != null)
+                                                {
+                                                    <a href="#/" data-prod-id="@product.ID" class="btn-product-icon btn-wishlist1  @(wishListItems.Contains(product.ID) ? "added w-icon-heart-full" : "w-icon-heart")" title="Add to wishlist"><span></span></a>
+                                                }
+                                                <a href="#" class="btn-product-icon btn-compare w-icon-compare"
+                                                   title="Add to Compare"></a>
+                                            </div>
+
+                                        </figure>
+                                        <div class="product-details">
+                                            <div class="product-cat">
+                                                <a href="#/">@product.CategoryName</a>
+                                            </div>
+                                            <h4 class="product-name">
+                                                <a href="#/">@product.Name</a>
+                                            </h4>
+                                            <div class="ratings-container">
+                                                <div class="ratings-full">
+                                                    <span class="ratings" style="width: @(product.Rating * 20)%;"></span>
+                                                    <span class="tooltiptext tooltip-top"></span>
+                                                </div>
+                                                <a href="@Url.Action("ProductDetail", "Home", new {Id = product.ID})" class="rating-reviews">(@product.Reviews reviews)</a>
+                                            </div>
+                                            <div class="product-pa-wrapper">
+                                                <div class="product-price">£@product.RetailPrice</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+
+
+
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="tab-pane fade" id="profile4">
+                        <section class="related-product-section">
+                            <div class="title-link-wrapper mb-4">
+                                <h4 class="title">Products from your Wish List</h4>
+                            </div>
+                            <div class="owl-carousel owl-theme row cols-lg-3 cols-md-4 cols-sm-3 cols-2"
+                                 data-owl-options="{
+                                    'nav': false,
+                                    'dots': false,
+                                    'margin': 20,
+                                    'responsive': {
+                                        '0': {
+                                            'items': 2
+                                        },
+                                        '576': {
+                                            'items': 3
+                                        },
+                                        '768': {
+                                            'items': 4
+                                        },
+                                        '992': {
+                                            'items': 3
+                                        }
+                                    }
+                                }">
+
+                                @foreach (var product in Model.WishListProducts)
+                                {
+
+                                    <div class="product">
+                                        <figure class="product-media">
+                                            <a href="@Url.Action("ProductDetail", "Home", new {Id = product.ID})">
+                                                <img src="@(!string.IsNullOrWhiteSpace(product.ImagePath) ? Url.Content(product.ImagePath) : "")" alt="Product"
+                                                     width="300" height="338" />
+
+                                            </a>
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-cart w-icon-cart"
+                                                   title="Add to cart"></a>
+                                                @if (user != null)
+                                                {
+                                                    <a href="#/" data-prod-id="@product.ID" class="btn-product-icon btn-wishlist1 @(wishListItems.Contains(product.ID) ? "added w-icon-heart-full" : "w-icon-heart")" title="Add to wishlist"><span></span></a>
+                                                }
+                                                <a href="#" class="btn-product-icon btn-compare w-icon-compare"
+                                                   title="Add to Compare"></a>
+                                            </div>
+
+                                        </figure>
+                                        <div class="product-details">
+                                            <div class="product-cat">
+                                                <a href="#/">@product.CategoryName</a>
+                                            </div>
+                                            <h4 class="product-name">
+                                                <a href="#/">@product.Name</a>
+                                            </h4>
+                                            <div class="ratings-container">
+                                                <div class="ratings-full">
+                                                    <span class="ratings" style="width: @(product.Rating * 20)%;"></span>
+                                                    <span class="tooltiptext tooltip-top"></span>
+                                                </div>
+                                                <a href="@Url.Action("ProductDetail", "Home", new {Id = product.ID})" class="rating-reviews">(@product.Reviews reviews)</a>
+                                            </div>
+                                            <div class="product-pa-wrapper">
+                                                <div class="product-price">£@product.RetailPrice</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                            </div>
+                        </section>
+                    </div>
+
+                </div>
+
+
+                <!-- End of Sidebar -->
+            </div>
+        </div>
+    </div>
+    <!-- End of Page Content -->
+</div>
+
+<div class="modal fade" id="LoginModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Login Required</h4>
+            </div>
+            <div class="modal-body">
+                <p>This feature is only available for the registered customers. Please Login to see the Recommendations</p>
+            </div>
+            <div class="modal-footer">
+                <a href="@Url.Action("Login", "Account", new { ReturnUrl = Request.Url })" type="button" class="btn btn-primary">Login</a>
+                <button type="button" data-dismiss="modal" class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+
+
+        $(".loginPopup").click(function () {
+            $("#LoginModal").modal("show");
+        });
+
+
+        (function ($) {
+            if ($.fn.style) {
+                return;
+            }
+
+            // Escape regex chars with \
+            var escape = function (text) {
+                return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+            };
+
+            // For those who need them (< IE 9), add support for CSS functions
+            var isStyleFuncSupported = !!CSSStyleDeclaration.prototype.getPropertyValue;
+            if (!isStyleFuncSupported) {
+                CSSStyleDeclaration.prototype.getPropertyValue = function (a) {
+                    return this.getAttribute(a);
+                };
+                CSSStyleDeclaration.prototype.setProperty = function (styleName, value, priority) {
+                    this.setAttribute(styleName, value);
+                    var priority = typeof priority != 'undefined' ? priority : '';
+                    if (priority != '') {
+                        // Add priority manually
+                        var rule = new RegExp(escape(styleName) + '\\s*:\\s*' + escape(value) +
+                            '(\\s*;)?', 'gmi');
+                        this.cssText =
+                            this.cssText.replace(rule, styleName + ': ' + value + ' !' + priority + ';');
+                    }
+                };
+                CSSStyleDeclaration.prototype.removeProperty = function (a) {
+                    return this.removeAttribute(a);
+                };
+                CSSStyleDeclaration.prototype.getPropertyPriority = function (styleName) {
+                    var rule = new RegExp(escape(styleName) + '\\s*:\\s*[^\\s]*\\s*!important(\\s*;)?',
+                        'gmi');
+                    return rule.test(this.cssText) ? 'important' : '';
+                }
+            }
+
+            // The style function
+            $.fn.style = function (styleName, value, priority) {
+                // DOM node
+                var node = this.get(0);
+                // Ensure we have a DOM node
+                if (typeof node == 'undefined') {
+                    return this;
+                }
+                // CSSStyleDeclaration
+                var style = this.get(0).style;
+                // Getter/Setter
+                if (typeof styleName != 'undefined') {
+                    if (typeof value != 'undefined') {
+                        // Set style property
+                        priority = typeof priority != 'undefined' ? priority : '';
+                        style.setProperty(styleName, value, priority);
+                        return this;
+                    } else {
+                        // Get style property
+                        return style.getPropertyValue(styleName);
+                    }
+                } else {
+                    // Get CSSStyleDeclaration
+                    return style;
+                }
+            };
+        })(jQuery);
+
+        $(".stars").click(function () {
+
+            $(this).style("color", "#FF9933", "important");
+            $(this).prevAll().style("color", "#FF9933", "important");
+            $(this).nextAll().style("color", "#333333", "important");
+
+            var dataVal = $(this).data("val");
+            $("#rating").val(dataVal);
+        });
+    </script>
+
+}

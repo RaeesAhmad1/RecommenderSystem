@@ -1,0 +1,310 @@
+﻿@model InventoryManagement.Models.DBModels.Role
+@using InventoryManagement.Models.DBModels;
+
+@{
+    ViewBag.Title = "AddRole";
+    Layout = "~/Views/Shared/_PanelLayout.cshtml";
+    Role role = Session["Role"] as Role;
+}
+
+
+<div class="panel">
+    @if (role.CanAddRoles)
+    {
+        <div class="panel-body">
+            <h3 class="title-hero">Add Role</h3>
+            <div class="example-box-wrapper">
+
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    <h4>Role</h4>
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Role Name</label>
+                        <div class="col-md-4">
+                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <h4>Product Roles</h4>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanViewProduct, new { @class = "form-check-input" })
+                                <label class="form-check-label">View Products</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanAddProducts, new { @class = "form-check-input" })
+                                <label class="form-check-label">Add Products</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanUpdateProduct, new { @class = "form-check-input" })
+                                <label class="form-check-label">Update Products</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanDeleteProduct, new { @class = "form-check-input" })
+                                <label class="form-check-label">Delete Products</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <br>
+
+                    <h4>Invoice Roles</h4>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanViewInvoice, new { @class = "form-check-input" })
+                                <label class="form-check-label">View Invoices</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanAddInvoice, new { @class = "form-check-input" })
+                                <label class="form-check-label">Add Invoices</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanUpdateInvoice, new { @class = "form-check-input" })
+                                <label class="form-check-label">Update Invoices</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanDeleteInvoice, new { @class = "form-check-input" })
+                                <label class="form-check-label">Delete Invoices</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <br>
+
+                    <h4>Stock Roles</h4>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanViewStock, new { @class = "form-check-input" })
+                                <label class="form-check-label">View Stocks</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanAddStock, new { @class = "form-check-input" })
+                                <label class="form-check-label">Add Stocks</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanUpdateStock, new { @class = "form-check-input" })
+                                <label class="form-check-label">Update Stocks</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanDeleteStock, new { @class = "form-check-input" })
+                                <label class="form-check-label">Delete Stocks</label>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+
+
+                    <h4>Customer Roles</h4>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanViewCustomer, new { @class = "form-check-input" })
+                                <label class="form-check-label">View Customers</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanAddCustomer, new { @class = "form-check-input" })
+                                <label class="form-check-label">Add Customer</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanUpdateCustomer, new { @class = "form-check-input" })
+                                <label class="form-check-label">Update Customer</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanDeleteCustomer, new { @class = "form-check-input" })
+                                <label class="form-check-label">Delete Customer</label>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <h4>User Roles</h4>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanViewUsers, new { @class = "form-check-input" })
+                                <label class="form-check-label">View Users</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanAddUsers, new { @class = "form-check-input" })
+                                <label class="form-check-label">Add Users</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanUpdateUsers, new { @class = "form-check-input" })
+                                <label class="form-check-label">Update Users</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanDeleteUsers, new { @class = "form-check-input" })
+                                <label class="form-check-label">Delete Users</label>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <h4>Expense Roles</h4>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanViewExpense, new { @class = "form-check-input" })
+                                <label class="form-check-label">View Expense</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanAddExpense, new { @class = "form-check-input" })
+                                <label class="form-check-label">Add Expense</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanUpdateExpense, new { @class = "form-check-input" })
+                                <label class="form-check-label">Update Expense</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanDeleteExpense, new { @class = "form-check-input" })
+                                <label class="form-check-label">Delete Expense</label>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+
+                    <h4>Dispute Roles</h4>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanViewDispute, new { @class = "form-check-input" })
+                                <label class="form-check-label">View Dispute</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanResolveDispute, new { @class = "form-check-input" })
+                                <label class="form-check-label">Resolve Dispute</label>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <h4>Cheque Roles</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanViewCheque, new { @class = "form-check-input" })
+                                <label class="form-check-label">View Cheque</label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <br>
+                    <br>
+
+                    <h4>Role Creation Roles</h4>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanViewRoles, new { @class = "form-check-input" })
+                                <label class="form-check-label">View Roles</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanAddRoles, new { @class = "form-check-input" })
+                                <label class="form-check-label">Add Roles</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanUpdateRoles, new { @class = "form-check-input" })
+                                <label class="form-check-label">Update Roles</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanDeleteRoles, new { @class = "form-check-input" })
+                                <label class="form-check-label">Delete Roles</label>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <h4>Other Roles</h4>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanViewDashboard, new { @class = "form-check-input" })
+                                <label class="form-check-label">View Dashboard</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(x => x.CanChangeProductSettings, new { @class = "form-check-input" })
+                                <label class="form-check-label">Modify Product Settings</label>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                        <div class="pull-right">
+                            <input type="submit" value="@(Model.ID == 0 ? "Add" : "Update") Role" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

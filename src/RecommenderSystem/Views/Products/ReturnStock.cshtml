@@ -1,0 +1,126 @@
+﻿@model InventoryManagement.ViewModels.AddStock_VM
+@using InventoryManagement.Models.DBModels
+@{
+
+    ViewBag.Title = "ReturnStock";
+    Layout = "~/Views/Shared/_PanelLayout.cshtml";
+
+    string id = Request.QueryString["ID"];
+
+}
+<div id="page-title">
+    <h2>Return Stock</h2>
+    <span>Return Stock of Products</span>
+</div>
+
+
+<div class="panel">
+    <div class="panel-body">
+        <div class="example-box-wrapper">
+            @using (Html.BeginForm("ReturnStock", "Products", FormMethod.Post, new { @Id = "ReturnStockForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal">
+                    @{
+                        <table class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    @*<th>Type</th>
+                                    <th>Size</th>*@
+                                    <th>Purchase Price</th>
+                                    <th>Retail Price</th>
+                                    <th>Quantity Left</th>
+                                    <th>Unit</th>
+                                    <th>Amount to Return</th>
+                                    <th>Reason For Return</th>
+                                </tr>
+                            </thead>
+                            @{
+                                int i = 0;
+                                foreach (var product in Model.ProductList)
+                                {
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                                    <tbody>
+                                        @foreach (var packaging in product.Packaging)
+                                        {
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" name="PackagingList[@i].ProductID" value="@product.Product.ID" />
+                                                <input type="hidden" name="PackagingList[@i].PackagingID" value="@packaging.PackagingID">
+                                                <input type="hidden" name="PackagingList[@i].PackageSize" value="@packaging.PackageSize" />
+                                                <b>@product.Product.Name</b>
+                                            </td>
+                                            <td>@packaging.PricePerPiece PKR</td>
+                                            <td>@packaging.RetailPrice PKR</td>
+                                            <td>@packaging.Quantity</td>
+                                            <td>@packaging.Unit</td>
+                                            <td><input type="number" min="0" class="form-control PackagingList" max="@packaging.Quantity" value="" placeholder="Quantity" name="PackagingList[@i].Quantity" /></td>
+                                            <td><textarea class="form-control" value="" placeholder="Reason" name="PackagingList[@i].Reason"></textarea></td>
+
+                                        </tr>
+                                            i++;
+                                        }
+                                    </tbody>
+                                }
+                            }
+                        </table>
+                    }
+                </div>
+                <br />
+                <div class="row">
+                    @if (Model.ProductList.Count > 0)
+    {
+                <div class="col-md-12">
+                    <div class="pull-right">
+                        <input type="submit" value="Return Stock" id="ReturnStockBtn" class="btn btn-primary" />
+                    </div>
+                </div>
+}
+
+
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+@section ViewScript{
+    <script>
+
+        //$("#Return_company_div" + i + " .input-sm").each(function () {
+        //    $(this).rules("Return", {
+        //        required: true
+        //    });
+        //});
+
+
+        //$("#ReturnStockForm").validate({
+        //    rules: {
+        //        "PackagingList[0].Quantity": {
+        //            min: 1,
+        //        }
+        //    }
+        //});
+
+        //$(".PackagingList").each(function () {
+        //    $(this).rules("Return", {
+        //        min: 0
+        //    });
+        //});
+
+        $("#ReturnStockBtn").click(function () {
+
+            if ($("#ReturnStockForm").valid()) {
+                $("#ReturnStockForm").submit();
+
+            }
+        });
+
+
+    </script>
+}

@@ -1,0 +1,131 @@
+﻿@model InventoryManagement.ViewModels.AddStock_VM
+@using InventoryManagement.Models.DBModels
+@{
+
+    ViewBag.Title = "AddStock";
+    Layout = "~/Views/Shared/_PanelLayout.cshtml";
+
+    string id = Request.QueryString["ID"];
+
+}
+
+
+<div id="page-title">
+    <h2>Add Stock</h2>
+    <span>Add Stock for available Products</span>
+</div>
+
+<div class="panel">
+    <div class="panel-body">
+        <div class="example-box-wrapper">
+            @using (Html.BeginForm("AddStock", "Products", FormMethod.Post, new { @Id = "AddStockForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal">
+                    @{
+                        <table class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    @*<th>Type</th>
+                                    <th>Size</th>*@
+                                    <th>Purchase Price</th>
+                                    <th>Retail Price</th>
+                                    <th>Quantity Left</th>
+                                    <th>Unit</th>
+                                    <th>Amount to Add</th>
+                                    <th>Reason For Adding</th>
+
+                                </tr>
+                            </thead>
+                            @{
+                                int i = 0;
+                                foreach (var product in Model.ProductList)
+                                {
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                                    <tbody>
+                                        @foreach (var packaging in product.Packaging)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden" name="PackagingList[@i].ProductID" value="@product.Product.ID" />
+                                                    <input type="hidden" name="PackagingList[@i].PackagingID" value="@packaging.PackagingID">
+                                                    <input type="hidden" name="PackagingList[@i].PackageSize" value="@packaging.PackageSize" />
+                                                    <b>@product.Product.Name</b>
+                                                </td>
+                                                
+                                                @*<td>@packaging.PackagingName</td>
+                                                <td>@packaging.PackageSize</td>*@
+                                                <td>@packaging.PricePerPiece PKR</td>
+                                                <td>@packaging.RetailPrice PKR</td>
+                                                <td>@packaging.Quantity</td>
+                                                <td>@packaging.Unit</td>
+                                                <td><input type="number" min="0" class="form-control PackagingList" value="" placeholder="Quantity" name="PackagingList[@i].Quantity" /></td>
+                                                <td><textarea class="form-control" value="" placeholder="Reason" name="PackagingList[@i].Reason"></textarea></td>
+
+                                            </tr>
+                                            i++;
+                                        }
+                                    </tbody>
+                                }
+                            }
+                        </table>
+                    }
+                </div>
+                <br />
+                <div class="row">
+
+                    @if (Model.ProductList.Count > 0)
+    {
+                <div class="col-md-12">
+                    <div class="pull-right">
+                        <input type="submit" value="Add Stock" id="AddStockBtn" class="btn btn-primary" />
+                    </div>
+                </div>
+}
+
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+@section ViewScript{
+    <script>
+
+        //$("#add_company_div" + i + " .input-sm").each(function () {
+        //    $(this).rules("add", {
+        //        required: true
+        //    });
+        //});
+
+
+        $("#AddStockForm").validate({
+            rules: {
+                "PackagingList[0].Quantity": {
+                    min: 1,
+                }
+            }
+        });
+
+        //$(".PackagingList").each(function () {
+        //    $(this).rules("add", {
+        //        min: 0
+        //    });
+        //});
+
+        $("#AddStockBtn").click(function () {
+
+            if ($("#AddStockForm").valid()) {
+                $("#AddStockForm").submit();
+
+            }
+        });
+
+
+    </script>
+}

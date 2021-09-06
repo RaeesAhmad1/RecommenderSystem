@@ -1,0 +1,185 @@
+﻿@model List<InventoryManagement.ViewModels.Unit_LV>
+@using InventoryManagement.Models.DBModels;
+@{
+    var Role = Session["Role"] as Role;
+    ViewBag.Title = "Unit";
+    Layout = "~/Views/Shared/_PanelLayout.cshtml";
+}
+
+@if (Role.CanChangeProductSettings)
+{
+
+    <div id="Page">
+        <div id="page-title">
+            <h2>Units</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="pull-right">
+                                    <a href="#/" class="btn btn-primary" @@click="ShowModal()" id="AddUnitBtn">
+                                        Add Unit<div class="ripple-wrapper"></div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="example-box-wrapper" id="UnitListTable">
+                            <div id="datatable-responsive_wrapper" class="dataTables_wrapper form-inline">
+                                <table id="datatable-responsive" class="table table-striped table-bordered responsive no-wrap DataTable" role="grid" aria-describedby="datatable-responsive_info" style="width: 100%;" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Total Products</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="element in UnitList">
+                                            <td>{{element.Name}}</td>
+                                            <td>{{element.TotalProducts}}</td>
+                                            <td>
+                                                <a class="EditUnitBtn" @@click="ShowModal(element)" href="#/"><i class="glyph-icon tooltip-button icon-pencil-square-o" style="color:blue" title="" data-original-title=".icon-pencil-square-o" aria-describedby="tooltip854738"></i></a>
+                                                <a class="DeleteUnitBtn" @@click="ShowDeleteModal(element)" href="#/"><i class="glyph-icon tooltip-button icon-trash" style="color:red" title="" data-original-title="Delete" aria-describedby="tooltip991223"></i></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="AddUnitModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4>Add Unit</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Unit Name</label>
+                            <input type="hidden" v-model="SelectedUnit.ID">
+                            <input type="text" class="form-control" v-model="SelectedUnit.Name">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" value="Create" class="btn btn-primary" @@click="InsertOrUpdate()" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="ConfirmDeleteModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 style="color:red">CAUTION!</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p style="color:red">Deleting a Unit will permenantly remove all records that are related to this unit. This means it will delete all products that are using this unit and will also remove all the invoices that belong to those products. Are you sure you want to continue?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" @@click="Delete()" >Delete</button>
+                        <button class="btn btn-default" data-dismiss="modal" type="button">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section ViewScript{
+        <script>
+
+            var VueApp = new Vue({
+                el: "#Page",
+                data: {
+                    APIUrls: {
+                        InsertUpdate: "/Units/AddEditUnit",
+                        Delete: "/Units/DeleteUnit",
+                        Get : "/Units/Get"
+                    },
+                    UnitList: @Html.Raw(Json.Encode(Model)),
+                    SelectedUnit: {
+                        ID : 0,
+                        Name: "",
+                        TotalProducts : 0,
+                    }
+                },
+                methods: {
+                    ResetSelectedUnit: function () {
+                        this.SelectedUnit = {
+                            ID: 0,
+                            Name: "",
+                            TotalProducts: 0,
+                        }
+                    },
+                    ShowModal: function (element) {
+                        console.log(element);
+                        if (element) {
+                            this.SelectedUnit = element
+                        }
+                        $("#AddUnitModal").modal("show");
+                    },
+                    InsertOrUpdate: function () {
+                        var vm = this;
+                        $.post("/Units/AddEditUnit/", { Unit: this.SelectedUnit }).then(function (resp) {
+                            vm.UnitList = resp;
+                            vm.ResetSelectedUnit();
+                            $("#AddUnitModal").modal("hide");
+                        });
+                    },
+                    ShowDeleteModal: function (element) {
+                        this.SelectedUnit = element;
+                        $("#ConfirmDeleteModal").modal("show");
+
+                    },
+                    Delete: function () {
+                        var vm = this;
+                        $.post("/Units/DeleteUnit", { UnitId: vm.SelectedUnit.ID }).then(function (resp) {
+                            vm.UnitList = resp;
+                            $("#ConfirmDeleteModal").modal("hide");
+                        });
+                    }
+                }
+            });
+
+            //$(function () {
+            //    $("#AddUnitBtn").click(function () {
+            //        $("#AddUnitModal #UnitID").val("");
+            //        $("#AddUnitModal #UnitName").val("");
+            //        $("#AddUnitModal #Description").val("");
+            //        $("#AddUnitModal .modal-header h4").html("Add Unit");
+            //        $("#AddEditUnitBtn").val("Create");
+            //        $("#AddUnitModal").modal("show");
+            //    });
+
+            //    $(".EditUnitBtn").click(function () {
+            //        var UnitID = $(this).data("id");
+            //        console.log(UnitID);
+            //        $.get("/Units/GetUnit", { UnitID: UnitID }).then(function (resp) {
+            //            console.log(resp);
+            //            $("#AddUnitModal #UnitID").val(resp.ID);
+            //            $("#AddUnitModal #UnitName").val(resp.Name);
+            //            $("#AddUnitModal .modal-header h4").html("Edit Unit");
+            //            $("#AddEditUnitBtn").val("Edit");
+            //            $("#AddUnitModal").modal("show");
+            //        });
+            //    });
+
+            //    $(".DeleteUnitBtn").click(function () {
+            //        var id = $(this).data("id");
+            //        $("#DeleteUnitID").val(id);
+            //        $("#ConfirmDeleteModal").modal("show");
+            //    });
+            //});
+        </script>
+    }
+
+}
+

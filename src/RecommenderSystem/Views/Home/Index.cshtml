@@ -1,0 +1,117 @@
+﻿@using InventoryManagement.Models.Repositories
+
+@{
+    Layout = "~/Views/Shared/_WebLayout.cshtml";
+
+    var repo = new ProductRepository();
+
+
+}
+
+
+<main class="main">
+    <section class="intro-section">
+        <div class=" owl-nav-inner owl-dot-inner owl-nav-lg animation-slider gutter-no row cols-1"
+             data-owl-options="{
+                    'nav': false,
+                    'dots': true,
+                    'items': 1,
+                    'responsive': {
+                        '1600': {
+                            'nav': true,
+                            'dots': false
+                        }
+                    }
+                }">
+            <div class="banner banner-fixed intro-slide intro-slide1"
+                 style="background-image: url(@Url.Content("~/Frontend/assets/images/demos/demo1/sliders/slide-1.jpg")); background-color: #ebeef2;">
+                <div class="container">
+                  
+                    <div class="banner-content y-50 text-right">
+                        
+                        <h3 class="banner-title font-weight-bolder ls-25 lh-1 slide-animate"
+                            data-animation-options="{
+                                    'name': 'fadeInRightShorter',
+                                    'duration': '1s',
+                                    'delay': '.4s'
+                                }">
+                            Recommender System
+                        </h3>
+                     
+
+
+                    </div>
+                    <!-- End of .banner-content -->
+                </div>
+                <!-- End of .container -->
+            </div>
+            <!-- End of .intro-slide1 -->
+
+            
+            <!-- End of .intro-slide2 -->
+
+            
+        </div>
+    </section>
+ 
+
+    
+
+    <div class="container">
+        <h2 class="title justify-content-center ls-normal mb-4 mt-10 pt-1 appear-animate">
+            Popular Products
+        </h2>
+        <div class="tab tab-nav-boxed tab-nav-outline appear-animate">
+            <ul class="nav nav-tabs justify-content-center" role="tablist"></ul>
+        </div>
+        <!-- End of Tab -->
+        <div class="tab-content product-wrapper appear-animate">
+            <div class="tab-pane active pt-4" id="tab1-1">
+                <div class="row cols-xl-5 cols-md-4 cols-sm-3 cols-2">
+
+                    @foreach (var prod in repo.GetList().Take(10))
+                    {
+
+                        <div class="product-wrap">
+                            <div class="product text-center">
+                                <figure class="product-media">
+                                    <a href="@Url.Action("ProductDetail", "Home", new { Id = prod.ID})">
+                                        <img src="@Url.Content(prod.ImagePath)" alt="Product" width="300" height="338" />
+                                        </a>
+                                    @*<div class="product-action-vertical">
+                                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
+                                           title="Add to cart"></a>
+                                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
+                                           title="Add to wishlist"></a>
+                                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
+                                           title="Quickview"></a>
+                                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
+                                           title="Add to Compare"></a>
+                                    </div>*@
+                                </figure>
+                                <div class="product-details">
+                                    <h4 class="product-name"><a href="@Url.Action("ProductDetail", "Home", new { Id = prod.ID})">@prod.Name</a></h4>
+                                    <div class="ratings-container">
+                                        <a href="#/" class="rating-reviews">(1 Reviews)</a>
+                                    </div>
+                                    <div class="product-price">
+                                        <ins class="new-price">£@prod.RetailPrice.00</ins>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+              
+                </div>
+            </div>
+
+        </div>
+        <!-- End of Tab Content -->
+
+
+
+   
+    </div>
+    <!--End of Catainer -->
+</main>

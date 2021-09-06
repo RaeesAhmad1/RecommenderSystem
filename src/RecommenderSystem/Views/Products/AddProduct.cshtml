@@ -1,0 +1,422 @@
+﻿@model InventoryManagement.ViewModels.AddProduct_VM
+@using InventoryManagement.Models.DBModels
+@{
+    ViewBag.Title = "View";
+
+    Layout = "~/Views/Shared/_PanelLayout.cshtml";
+
+    Role role = Session["Role"] as Role;
+    List<SelectListItem> items = new List<SelectListItem>();
+
+    foreach (var element in Model.categoryList)
+    {
+        items.Add(new SelectListItem { Value = element.ID.ToString(), Text = element.Name });
+    }
+
+
+
+    //List<SelectListItem> Types = new List<SelectListItem>();
+    //Types.Add(new SelectListItem { Value = "Gents", Text = "Gents" });
+    //Types.Add(new SelectListItem { Value = "Ladies", Text = "Ladies" });
+    //Types.Add(new SelectListItem { Value = "Child", Text = "Child" });
+
+
+}
+
+
+
+<div id="page-title">
+    <h2>@((Model.product.ID == 0) ? "Add" : "Update" ) Product</h2>
+    <span>@((Model.product.ID == 0) ? "Add New" : "Update" ) Product Details</span>
+</div>
+
+<div class="panel">
+    @if (role.CanAddProducts)
+    {
+        <div class="panel-body">
+            <div class="example-box-wrapper">
+
+
+                <form id="AddProductForm" action="/Products/AddProduct" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal">
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="hidden" name="product.ID" id="product_ID" value="@Model.product.ID">
+                                    <label class="control-label col-md-2">Name</label>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control SKUGenerator" name="product.Name" id="product_Name" placeholder="Product Name" value="@Model.product.Name">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" for="product_Description">Description</label>
+                                    <div class="col-md-10">
+                                        <textarea class="form-control" cols="20" id="product_Description" name="product.Description" placeholder="Product Description" rows="2" value="@Model.product.Description"></textarea>
+
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group" style="display:none">
+                                    <label class=" control-label col-md-2" for="product_Color">Color</label>
+                                    <div class="col-md-4">
+                                        <input class="SKUGenerator form-control text-box single-line" id="product_Color" name="product.Color" placeholder="Product Color" type="text" value="@Model.product.Color">
+
+                                    </div>
+                                    <label class="control-label col-md-1" for="product_Size">Size</label>
+                                    <div class="col-md-5">
+                                        <input class="SKUGenerator form-control text-box single-line" id="product_Size" name="product.Size" placeholder="Product Size" type="text" value="@Model.product.Size">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2" for="product_SKU">SKU</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control text-box single-line" id="product_SKU" name="product.SKU" placeholder="Stock Keeping Unit" type="text" value="@Model.product.SKU">
+
+                                    </div>
+                                </div>
+
+                                @*<div class="form-group">
+                                    <label class="control-label col-md-2" for="product_MU">MU</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control text-box single-line" id="product_MU" name="product.MU" placeholder="Merchandise Unit" type="text" value="">
+
+                                    </div>
+                                </div>*@
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Unit</label>
+                                    <div class="col-md-10">
+                                        <select class="form-control" id="product_UnitID" name="product.UnitID">
+                                            @foreach (var element in Model.Units)
+                                            {
+                                                <option @((Model.product.UnitID == element.ID.ToString() )? "Selected" : "") value="@element.ID">@element.Name</option>
+                                            }
+
+                                        </select>
+
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Category</label>
+                                    <div class="col-md-10">
+                                        <select class="form-control" data-val="true" data-val-number="The field CategoryID must be a number." data-val-required="The CategoryID field is required." id="product_CategoryID" name="product.CategoryID">
+                                            @foreach (var element in Model.categoryList)
+                                            {
+                                                <option @(Model.product.CategoryID == element.ID ? "Selected" : "") value="@element.ID">@element.Name</option>
+                                            }
+                                        </select>
+
+                                    </div>
+                                </div>
+                                @*<div class="form-group">
+                                    <label class="control-label col-md-2">Type</label>
+                                    <div class="col-md-10">
+                                        <select class="form-control" id="product_Type" name="product.Type">
+                                            @foreach (var element in Types)
+                                            {
+                                                <option value="@element.Value">@element.Text</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>*@
+
+
+                            </div>
+                            <div class="col-md-6">
+                                <div class="pull-right">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            @if (string.IsNullOrEmpty(Model.product.ImagePath))
+                                            {
+                                                <img src="@Url.Content("/Images/ProjectImages/DefaultProduct.jpg")" id="ProductImage" style="width:300px;height:300px">
+                                            }
+                                            else
+                                            {
+                                                <img src="@Url.Content(Model.product.ImagePath)" onerror="this.onerror=null;this.src='@Url.Content("/Images/ProjectImages/DefaultProduct.jpg")'" id="ProductImage" style="width:300px;height:300px">
+                                            }
+                                            @Html.HiddenFor(x=>x.product.ImagePath)
+                                        </div>
+                                        <div class="col-md-12">
+                                            <input type="file" name="ImageFile" class="btn btn-primary" data-src="#ProductImage" style="margin-top: 10px; width:100px" id="SelectProductBtn" onchange="readURL(this)" value="Select Product Image">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-horizontal">
+                        <h4>Packaging Details</h4>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="form-group">
+                                    <table class="table table-responsive">
+                                        <thead>
+                                            <tr>
+                                                <th>Packaging Type</th>
+                                                <th>Size</th>
+                                                <th>Purchase Price</th>
+                                                <th>Retail Price</th>
+                                                <th>Quantity</th>
+                                                <th>Actions</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ProductPackaging"></tbody>
+                                    </table>
+                                </div>
+                                <div ></div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-primary" id="AddProductRow" >
+                                        <i class="glyph-icon tooltip-button icon-plus-square" title="" data-original-title=".icon-plus-square"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="pull-left">
+                                <a href="@Url.Action("Products","Products")">Back to List</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="pull-right">
+                                <input type="button" id="AddProductBtn" value="@(Model.product.ID == 0 ? "Add" : "Update") Product" class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    }
+</div>
+
+<script type="text/x-handlebars-template" id="PackageRowTemplate">
+    <tr>
+        <td>
+            <input type="hidden" name="ProductPacking[{{Count}}].ID" value="{{ID}}">
+            <input type="hidden" name="ProductPacking[{{Count}}].PackagingID" value="{{PackagingType}}" />
+            <input type="hidden" name="ProductPacking[{{Count}}].PackageSize" value="{{PackageSize}}">
+            <select class="form-control" name="ProductPacking[{{Count}}].PackagingID">
+                {{#select PackagingType}}
+                <option value="">Packaging Type</option>
+                @foreach (var element in Model.packaging)
+            {
+                <option value="@element.ID">@element.Name</option>
+        }
+                {{/select}}
+            </select>
+        </td>
+        <td><input type="text" class="form-control PackagingInput" value="{{PackageSize}}" name="ProductPacking[{{Count}}].PackageSize" placeholder="Size" /></td>
+        <td><input type="text" id="ProductPacking_{{Count}}_PricePerPiece" class="form-control PackagingInput" value="{{PricePerPiece}}" name="ProductPacking[{{Count}}].PricePerPiece" placeholder="Purchase Price" /></td>
+        <td><input type="text" class="form-control PackagingInput RetailPrice" data-min="ProductPacking_{{Count}}_PricePerPiece" value="{{RetailPrice}}" name="ProductPacking[{{Count}}].RetailPrice" placeholder="Retail Price" /></td>
+        <td><input type="text" class="form-control PackagingInput" value="{{Quantity}}" name="ProductPacking[{{Count}}].Quantity" placeholder="Quantity" /></td>
+        <td>
+            <button class="btn btn-primary DeleteRowBtn" type="button">
+                <i class="glyph-icon tooltip-button icon-close" title="" data-original-title=".icon-close" aria-describedby="tooltip805086"></i>
+            </button>
+        </td>
+    </tr>
+</script>
+
+
+@section ViewScript{
+    <script>
+        var packingList = @(Html.Raw(Json.Encode(Model.ProductPacking)));
+        var count = 0;
+        var theTemplate = window.Handlebars.compile($("#PackageRowTemplate").html());
+        var data = "";
+
+
+     
+
+        $("#AddProductBtn").click(function () {
+
+            //$("input.RetailPrice").each(function () {
+            //    var id = $(this).data("min");
+            //    var minVal = $("#" + id).val();
+            //    $(this).rules("Add", {
+            //        required: true
+            //        //min: function () {
+            //        //    console.log(minVal);
+            //        //    return minVal;
+            //        //},
+            //    });
+            //});
+
+
+            if ($("#AddProductForm").valid()) {
+
+                    console.log("valid");
+
+                    $("#AddProductForm").submit();
+                }
+                else {
+                    console.log("INvalid");
+                }
+            })
+
+
+        $(".SKUGenerator").keyup(function () {
+
+            var color = $("#product_Color").val().trim();
+            var size = $("#product_Size").val().trim();
+            var name = $("#product_Name").val().trim();
+            var sku = name.toUpperCase();
+            sku = sku.replace(/[^\w\s]/gi, '');
+            if (!isNullOrEmpty(color)) {
+                sku += "-" + color.toUpperCase();
+            }
+            if (!isNullOrEmpty(size)) {
+                sku += "-" + size;
+            }
+
+
+
+            sku = sku.split(' ').map(function (item) {
+                console.log(sku);
+                return item.trim();
+            });
+
+            sku = sku.filter(function (str) {
+                return /\S/.test(str);
+            });
+
+            console.log("List:" + sku);
+            sku = sku.join('-');
+            console.log(sku);
+
+
+
+            $("#product_SKU").val(sku);
+
+        });
+
+
+
+
+            if (packingList.length == 0)
+            {
+                CreatePackingRow(null);
+            }
+            $("#AddProductRow").click(function () {
+                CreatePackingRow();
+            });
+
+            $("#ProductPackaging").on("click", "#DeleteRowBtn", function () {
+                var element = $(this);
+                var packagingID = $(this).data("id");
+                bootbox.confirm("<h3 style='color:red'>Caution !</h3><br /> <p style='color:red'>Removing this packaging will remove all invoices that are using this packaging. Are you sure?</p>", function (result) {
+                    if (result != false) {
+                        $.post("@Url.Action("DeleteProductPackaging", "Products")", { PackagingID: packagingID }).then(function () {
+                            $(element).parents(".form-group").find("input").val('');
+                            $(element).parents(".form-group").find("select").val('');
+                            $(element).parents(".form-group").hide();
+                        });
+                    }
+                });
+
+            });
+
+            $.each(packingList, function (ind, val) {
+                console.log(val);
+                CreatePackingRow(val);
+            });
+            function CreatePackingRow(PackageInfo)
+            {
+                console.log(count);
+                var context = {};
+                if (PackageInfo) {
+                    context = {
+                        ID: PackageInfo.ID,
+                        Count: count,
+                        PackageSize: PackageInfo.PackageSize,
+                        Quantity: PackageInfo.Quantity,
+                        PricePerPiece: PackageInfo.PricePerPiece,
+                        RetailPrice : PackageInfo.RetailPrice,
+                        PackagingType: PackageInfo.PackagingID,
+                        IstRow: (function () { return count == 0 })(),
+                    };
+                } else {
+                    context = {
+                        ID: 0,
+                        Count: count,
+                        PackageSize: 1,
+                        Quantity: "",
+                        PricePerPiece: "",
+                        PackagingType : "@Model.packaging.First().ID",
+                        IstRow: (function () { return count == 0 })(),
+                    };
+                }
+                $("#ProductPackaging").append(theTemplate(context));
+                console.log("Creating row");
+
+                var validator = $("#AddProductForm").validate({
+                    rules: {
+                        "product.Name": {
+                            "required": true
+                        },
+                        "product.SKU": {
+                            remote: {
+                                url: "/Validation/AvailableProductSKU",
+                                type: "post",
+                                data: {
+                                    'SKU': function () {
+                                        return $("#product_SKU").val();
+                                    }, 
+                                    'ID': function () {
+                                        return $("#product_ID").val();
+                                    }
+                                }
+                            }
+                        },
+                        "ProductPacking[0].PricePerPiece": {
+                            required : true,
+                        },
+                        "ProductPacking[0].RetailPrice": {
+                            required: true,
+                            min: function () {
+                                return $("#ProductPacking_0_PricePerPiece").val();
+                            }
+                        }
+
+                    },
+                    messages: {
+                        "product.SKU": {
+                            remote: "SKU Already exists. Please modify"
+                        }
+                    }
+
+                });
+
+                $(".RetailPrice").each(function () {
+                    console.log("applied validation");
+                    var id = $(this).data("min");
+                    var minVal = $("#" + id).val();
+                    $(this).rules("Add", {
+                        required: true
+                        //min: function () {
+                        //    console.log(minVal);
+                        //    return minVal;
+                        //},
+                    });
+                });
+                count++;
+            }
+
+    </script>
+}

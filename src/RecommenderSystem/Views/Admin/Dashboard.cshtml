@@ -1,0 +1,424 @@
+﻿@using InventoryManagement.Models.DBModels;
+@model InventoryManagement.ViewModels.Output.Dashboard_Out_VM
+@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_PanelLayout.cshtml";
+    var Role = Session["Role"] as Role;
+}
+
+@if (Role.CanViewDashboard)
+{
+
+    <div id="page-title">
+        <h2>Dashboard</h2>
+        <span>Overview of the entire system</span>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-3">
+            <div class="tile-box bg-danger">
+                <div class="tile-header">
+                    Cash Recovery
+                    @*<div class="float-right"><i class="glyph-icon icon-caret-up"></i> +77%</div>*@
+                </div>
+                <div class="tile-content-wrapper">
+                    <i class="glyph-icon icon-camera"></i>
+                    <div class="tile-content">@Model.CashRecovery <span> PKR</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="tile-box bg-blue-alt">
+                <div class="tile-header">
+                    Pending Orders
+                    @*<div class="float-right"><i class="glyph-icon icon-caret-up"></i> +15%</div>*@
+                </div>
+                <div class="tile-content-wrapper">
+                    <i class="glyph-icon icon-dashboard"></i>
+                    <div class="tile-content">@Model.PendingOrders<span></span> </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="col-md-3">
+            <div class="tile-box bg-purple">
+                <div class="tile-header">
+                    Stock Balance
+                </div>
+                <div class="tile-content-wrapper">
+                    <i class="glyph-icon icon-ticket"></i>
+                    <div class="tile-content">@Model.StockBalance <span> PKR</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="tile-box bg-black">
+                <div class="tile-header">
+                    Stock Sales
+                    <div class="float-right"> @Model.StockCount Remaining</div>
+                </div>
+                <div class="tile-content-wrapper">
+                    <i class="glyph-icon icon-money"></i>
+                    <div class="tile-content">@Model.StockSales <span> </span></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="dashboard-box dashboard-box-chart bg-white content-box">
+                <canvas id="ExpenseChart" width="290" height="210" style="display: inline-block; width: 290px; height: 110px; vertical-align: top;"></canvas>
+                <div class="button-pane">
+                    <div class="size-md float-left"><a href="#" title="">View more details</a></div><a href="#" class="btn btn-primary float-right tooltip-button" data-placement="top" title="" data-original-title="Remove comment"><i class="glyph-icon icon-caret-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-box dashboard-box-chart bg-white content-box">
+                <canvas id="RevenueChart" width="290" height="210" style="display: inline-block; width: 290px; height: 110px; vertical-align: top;"></canvas>
+                <div class="button-pane">
+                    <div class="size-md float-left"><a href="#" title="">View more details</a></div><a href="#" class="btn btn-primary float-right tooltip-button" data-placement="top" title="" data-original-title="Remove comment"><i class="glyph-icon icon-caret-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-box dashboard-box-chart bg-white content-box">
+                <canvas width="290" height="210" id="SalesChart" style="display: inline-block; width: 290px; height: 110px; vertical-align: top;"></canvas>
+                <div class="button-pane">
+                    <div class="size-md float-left"><a href="#" title="">View more details</a></div><a href="#" class="btn btn-primary float-right tooltip-button" data-placement="top" title="" data-original-title="Remove comment"><i class="glyph-icon icon-caret-right"></i></a>
+                </div>
+            </div>
+
+        </div>
+        @*<div class="col-md-4">
+                <div class="dashboard-box dashboard-box-chart bg-white content-box">
+                    <canvas width="290" height="110" style="display: inline-block; width: 290px; height: 110px; vertical-align: top;"></canvas>
+                    <div class="button-pane">
+                        <div class="size-md float-left"><a href="#" title="">View more details</a></div><a href="#" class="btn btn-primary float-right tooltip-button" data-placement="top" title="" data-original-title="Remove comment"><i class="glyph-icon icon-caret-right"></i></a>
+                    </div>
+                </div>
+            </div>*@
+    </div>
+
+
+    <div class="panel mrg20T">
+        <div class="panel-body">
+            <h3 class="title-hero">Top Selling Products</h3>
+            <div class="example-box-wrapper">
+                <table class="table table-striped table-bordered DataTable" id="KingsTable">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Details</th>
+                            <th>Category</th>
+                            <th>Total Quantity Sold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var element in Model.Top10SoldProducts)
+                    {
+                        <tr>
+                            <td>@element["Name"]</td>
+                            <td>
+                                Size = @element["PackageSize"]<br />
+                                Unit = @element["Unit"]<br />
+                                Packaging = @element["Packaging"] <br />
+                                Price Per Piece = @element["PricePerPiece"]<br />
+                            </td>
+                            <td>@element["Category"]</td>
+                            <td>@element["TotalSold"]</td>
+                        </tr>
+                }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="panel mrg20T">
+        <div class="panel-body">
+            <h3 class="title-hero">Low Stock Items</h3>
+            <div class="example-box-wrapper">
+                <table class="table table-striped table-bordered DataTable" id="LowStockItems">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>SKU</th>
+                            <th>Retail Price</th>
+                            <th>Quantity Left</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var element in Model.LowStock)
+                        {
+                            <tr>
+                                <td>@element["Name"]</td>
+                                <td>@element["SKU"]</td>
+                                <td>@element["RetailPrice"] PKR</td>
+                                <td>@element["Quantity"]</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+}
+
+
+
+
+
+@section ViewScript{
+    <script>
+
+
+
+        $(function () {
+
+
+            function myCustomFilterFunction(filterVal, columnVal) {
+                var found;
+                if (columnVal === '') {
+                    return true;
+                }
+                switch (filterVal) {
+                    case 'happy':
+                        found = columnVal.search(/:-\]|:\)|Happy|JOY|:D/g);
+                        break;
+                    case 'sad':
+                        found = columnVal.search(/:\(|Sad|:'\(/g);
+                        break;
+                    case 'angry':
+                        found = columnVal.search(/!!!|Arr\.\.\./g);
+                        break;
+                    case 'lucky':
+                        found = columnVal.search(/777|Bingo/g);
+                        break;
+                    case 'january':
+                        found = columnVal.search(/01|Jan/g);
+                        break;
+                    default:
+                        found = 1;
+                        break;
+                }
+
+                if (found !== -1) {
+                    return true;
+                }
+                return false;
+            }
+
+
+
+            //$("#Top10SoldProducts").dataTable().yadcf([{
+            //    column_number: 0,
+            //    filter_type: 'custom_func',
+            //    custom_func: myCustomFilterFunction,
+            //    data: [{
+            //        value: 'happy',
+            //        label: 'Happy'
+            //    }, {
+            //        value: 'sad',
+            //        label: 'Sad'
+            //    }, {
+            //        value: 'angry',
+            //        label: 'Angry'
+            //    }, {
+            //        value: 'lucky',
+            //        label: 'Lucky'
+            //    }, {
+            //        value: 'january',
+            //        label: 'January'
+            //    }],
+            //    filter_default_label: "Custom func filter"
+            //}, {
+            //    column_number: 1,
+            //    filter_type: "range_number_slider"
+            //}, {
+            //    column_number: 2,
+            //    filter_type: "range_date",
+            //    filter_container_id: "external_filter_container"
+            //}, {
+            //    column_number: 3,
+            //    filter_type: "auto_complete",
+            //    text_data_delimiter: ","
+            //}, {
+            //    column_number: 4,
+            //    column_data_type: "html",
+            //    html_data_type: "text",
+            //    filter_default_label: "Select tag"
+            //}]);
+
+
+          
+
+
+
+            new Chart($("#ExpenseChart"), {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(Json.Encode(Model.RevenueGraph.Select(x=>x["Month"]).ToList())),
+                    datasets: [
+                        {
+                            label: "Expense",
+                            backgroundColor: "#e73629",
+                            data: @Html.Raw(Json.Encode(Model.RevenueGraph.Select(x=>x["Expense"]).ToList())),
+                        }, {
+                            label: "Earnings",
+                            backgroundColor: "#3244a8",
+                            data:  @Html.Raw(Json.Encode(Model.RevenueGraph.Select(x => x["Earning"]).ToList())),
+                        }
+                    ]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: '@(Html.Raw(Json.Encode(Model.RevenueGraph.Select(x=>double.Parse(x["Revenue"])).Sum()))) PKR Earnings - Expense, (Monthly Comparison)'
+                    }
+                }
+            });
+
+
+
+            new Chart($("#RevenueChart"), {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Encode(Model.RevenueGraph.Select(x => x["Month"]).ToList())),
+                    datasets: [{
+                        data:  @Html.Raw(Json.Encode(Model.RevenueGraph.Select(x => x["Revenue"]).ToList())),
+                        label: "Revenue",
+                        borderColor: "#3e95cd",
+                        fill: false
+                    },
+                    ]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Revenue (Monthly Comparison)'
+                    }
+                }
+            });
+
+
+             new Chart($("#SalesChart"), {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(Json.Encode(Model.SalesGraph.Select(x=>x["Month"]).ToList())),
+                    datasets: [
+                        {
+                            label: "Sales",
+                            backgroundColor: "#e73629",
+                            data: @Html.Raw(Json.Encode(Model.SalesGraph.Select(x=>x["Quantity"]).ToList())),
+                        }
+                    ]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: '@(Html.Raw(Json.Encode(Model.SalesGraph.Select(x=>double.Parse(x["Quantity"])).Sum()))) Units Sold, Last 5 Months'
+                    }
+                }
+            });
+
+        });
+
+
+
+
+
+        @*var ctx = document.getElementById("TempChart").getContext('2d');
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                datasets: [{
+                    label: 'My First dataset',
+                    backgroundColor: "red",
+                    borderColor: "red",
+                    data:["40","60", "30"],
+                    fill: false,
+                }, {
+                    label: 'My Second dataset',
+                    fill: false,
+                    backgroundColor: "blue",
+                    borderColor: "blue",
+                    data: [@Html.Raw(Json.Encode(RevenueGraph.Select(x=>x["Expense"]).ToList()))],
+                }]
+            },
+
+                //[@Html.Raw(Json.Encode(RevenueGraph.Select(x=>x["Revenue"]).ToList()))],
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Chart.js Line Chart'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Month'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        }
+                    }]
+                }
+            }
+        });*@
+
+
+        @*var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        var config = {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                datasets: [{
+                    label: 'My First dataset',
+                    backgroundColor: window.chartColors.red,
+                    borderColor: window.chartColors.red,
+                    data:,
+                    fill: false,
+                }, {
+                    label: 'My Second dataset',
+                    fill: false,
+                    backgroundColor: window.chartColors.blue,
+                    borderColor: window.chartColors.blue,
+                    data: [@Html.Raw(Json.Encode(RevenueGraph.Select(x=>x["Expense"]).ToList()))],
+                }]
+            },
+            options: {
+
+            }
+        };*@
+
+    </script>
+}

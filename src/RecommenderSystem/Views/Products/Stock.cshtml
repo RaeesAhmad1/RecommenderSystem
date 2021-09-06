@@ -1,0 +1,122 @@
+﻿
+@{
+    ViewBag.Title = "Stock";
+    Layout = "~/Views/Shared/_PanelLayout.cshtml";
+
+    string StockType = Request.QueryString["Type"];
+
+    string query = @"
+Select DISTINCT SS.Quantity, SS.TimeStamp,SS.Reason,SS.type as StockType, P.Name as ProductName,
+PP.Name as PackagingName, PPP.PackageSize, PPP.RetailPrice, PU.Name as Unit,
+PPP.Quantity as QuantityLeft, U.FirstName + ' ' + U.LastName + ' (' + R.Name + ')' as ByUser, U.Username
+from Stocks.Stock SS
+INNER JOIN Products.Product P ON P.ID = SS.ProductID
+LEFT JOIN Products.Packaging PP ON PP.ID = SS.PackagingID
+LEFT JOIN Products.Product_Packaging PPP ON PPP.ProductID = P.ID
+LEFT JOIN Products.Unit PU ON PU.ID = P.UnitID
+INNER JOIN Users.[User] U ON SS.UserID = U.ID
+INNER JOIN Users.[Role] R ON R.ID = U.RoleID
+";
+    if (!string.IsNullOrWhiteSpace(StockType))
+    {
+        query += $"Where SS.Type = '{StockType}'";
+    }
+
+    DBHelper db = new DBHelper();
+    //db.values.Add("@CategoryID", CategoryID.ToString());
+    var StockHistory = DBHelper.QueryList(query);
+
+    var StockTypes = DBHelper.QueryColumn("SELECT DISTINCT SS.Type from Stocks.Stock SS", null);
+
+
+}
+<div id="page-title">
+    <h2>Stock History</h2>
+    <span>View All Stock History</span>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="example-box-wrapper"> 
+                    <div class="row">
+                        <div class="col-md-4">
+                        <select class="form-control" id="StockTypeFilter">
+                            <option value="">Select Stock Type</option>
+                            @foreach (var elemen in StockTypes)
+                            {
+                                <option @(elemen == StockType ? "Selected" : "")>@elemen</option>
+                            }
+
+                        </select>
+                            </div>
+                    </div>
+                    <table  id="StockHistory" class="table table-striped table-bordered responsive DataTable">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Price</th>
+                                <th>Quantity Left</th>
+                                <th>Quantity Used/Added</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Reason</th>
+                                <th  style="text-align:center !important">User</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var element in StockHistory)
+                            {
+                                <tr>
+                                    <td>@element["ProductName"]</td>
+
+                                    <td>@element["RetailPrice"] PKR</td>
+
+                                    <td style="text-align:center !important">@element["QuantityLeft"]</td>
+                                    <td style="text-align:center !important" >@element["Quantity"]</td>
+                                    <td>@(DateTime.Parse(element["TimeStamp"]).ToString("dd MMM yyyy hh:mm tt"))</td>
+
+                                    <td>@element["StockType"]</td>
+
+                                    @if (string.IsNullOrEmpty(element["Reason"]))
+                                    {
+                                        <td>Stock Added/Modified</td>
+                                    }
+                                    else
+                                    {
+                                        int invID = 0;
+                                        if (int.TryParse(element["Reason"], out invID))
+                                        {
+                                            <td><a href="@Url.Action("InvoicePrint", "Sales", new { ID = element["Reason"] })">Invoice #@element["Reason"]</a></td>
+                                        }
+                                        else
+                                        {
+                                            <td>@element["Reason"]</td>
+                                        }
+
+                                    }
+                                    <td>
+                                        <a href="#/" data-toggle="tooltip" title="@element["Username"]"> @element["ByUser"]</a>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section ViewScript{
+    
+    <script>
+
+        $("#StockTypeFilter").change(function () {
+            window.location.href = `/Products/Stock?Type=${$(this).val()}`;
+        });
+    </script>
+    }

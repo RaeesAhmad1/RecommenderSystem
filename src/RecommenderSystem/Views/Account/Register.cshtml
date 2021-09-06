@@ -1,0 +1,128 @@
+﻿@model InventoryManagement.ViewModels.Register_VM
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+<div class="center-vertical">
+    <div class="center-content">
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "LoginForm", @class = "col-md-8 col-sm-8 col-xs-5 col-lg-8 center-margin" }))
+        {   @Html.AntiForgeryToken()
+            <h3 class="text-center pad25B font-gray text-transform-upr font-size-23"> The Lion of Punjab <span class="opacity-80"></span></h3>
+            <div id="login-form" class="content-box bg-default">
+                <div class="content-box-wrapper pad20A">
+                    <img class="mrg25B center-margin radius-all-100 display-block" src="../../assets/image-resources/gravatar.jpg" alt="">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <h4 class="bold bottommargin_5">First Name</h4>
+                                    @Html.HiddenFor(x=>x.ReturnUrl)
+                                    @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control", required = "required" })
+                                    @Html.ValidationMessageFor(x => x.FirstName, null, new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <h4 class="bold bottommargin_5">Last Name</h4>
+                                    @Html.TextBoxFor(x => x.LastName, new { @class = "form-control", required = "required" })
+                                    @Html.ValidationMessageFor(x => x.LastName, null, new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <h4 class="bold bottommargin_5">Email</h4>
+                                    @Html.TextBoxFor(x => x.Email, new { @class = "form-control", required = "required" })
+                                    @Html.ValidationMessageFor(x => x.Email, null, new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <h4 class="bold bottommargin_5">Mobile No</h4>
+                                    @Html.TextBoxFor(x => x.MobileNo, new { @class = "form-control", type = "number", required = "required" })
+                                    @Html.ValidationMessageFor(x => x.MobileNo, null, new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <h4 class="bold bottommargin_5">Password</h4>
+                                    @Html.TextBoxFor(x => x.Password, new { @class = "form-control", type = "password", required = "required" })
+                                    @Html.ValidationMessageFor(x => x.Password, null, new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <h4 class="bold bottommargin_5">Confirm Password</h4>
+                                    @Html.TextBoxFor(x => x.ConfirmPassword, new { @class = "form-control", type = "password", required = "required" })
+                                    @Html.ValidationMessageFor(x => x.ConfirmPassword, null, new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <h4 class="bold bottommargin_5">Gender</h4>
+                                    @Html.DropDownListFor(x => x.Gender, new List<SelectListItem>{
+        new SelectListItem{ Text="Male", Value="Male"},
+        new SelectListItem{ Text="Female", Value="Female"}}, "Select", new { @class = "form-control", required = "required" })
+                                    @Html.ValidationMessageFor(x => x.Gender, null, new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <h4 class="bold bottommargin_5">Birthday</h4>
+                                    @Html.TextBoxFor(x => x.Birthday, new { @class = "form-control datepicker", required = "required" })
+                                    @Html.ValidationMessageFor(x => x.Birthday, null, new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-block btn-primary">Register</button>
+                    </div>
+                    <div class="row">
+                        <div class="checkbox-primary col-md-6" style="height: 20px">
+                            <label>
+                                <input type="checkbox" id="loginCheckbox1" class="custom-checkbox"> Remember me
+                            </label>
+                        </div>
+                        <div class="text-right col-md-6"><a href="#" class="switch-button" switch-target="#login-forgot" switch-parent="#login-form" title="Recover password">Forgot your password?</a></div>
+                    </div>
+                </div>
+            </div>
+            <div id="login-forgot" class="content-box bg-default hide">
+                <div class="content-box-wrapper pad20A">
+                    <div class="form-group">
+                        <label for="exampleInputEmail2">Email address:</label>
+                        <div class="input-group">
+                            <span class="input-group-addon addon-inside bg-gray"><i class="glyph-icon icon-envelope-o"></i></span>
+                            <input type="email" class="form-control" data-pars id="exampleInputEmail2" placeholder="Enter email">
+                        </div>
+                    </div>
+                </div>
+                <div class="button-pane text-center">
+                    <button type="submit" class="btn btn-md btn-primary">Recover Password</button> <a href="#" class="btn btn-md btn-link switch-button" switch-target="#login-form" switch-parent="#login-forgot" title="Cancel">Cancel</a>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>

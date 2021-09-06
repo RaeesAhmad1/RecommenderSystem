@@ -1,0 +1,18 @@
+﻿@using InventoryManagement.Models.DBModels
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<div id="loading">
+    <div class="svg-icon-loader"><img src="https://agileui.com/demo/delight/assets/images/svg-loaders/bars.svg" width="40" alt=""></div>
+</div>
+<style type="text/css">
+    html,
+    body {
+        height: 100%;
+        background: #fff;
+    }
+</style>
+@RenderBody()
+
+@RenderSection("ViewScript", false)

@@ -1,0 +1,509 @@
+﻿@using InventoryManagement.Models.Common
+@using InventoryManagement.ViewModels;
+@using InventoryManagement.Models.DBModels;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    SessionUser user = Session["User"] as SessionUser;
+    Role r = Session["Role"] as Role;
+    Layout_VM LayoutData = ViewBag.Layout as Layout_VM;
+
+    string query = $@"
+Select * from General.NotificationMessage Where  (UserType = {r.ID.ToString()} OR UserID = {r.ID} OR UserType = '' ) AND Viewed = 0
+order by TimeStamp desc";
+    List<NotificationMessage> messages = DBHelper.GetList<NotificationMessage>(query);
+
+
+
+    string reminderquery = @"
+Select  'Low Stock Warning, Stock is Low for ' + P.Name + ' ('+P.SKU+')'  as Description  from Products.Product_Packaging PP
+INNER JOIN Products.Product P ON PP.ProductID= P.ID
+Where PP.Quantity < PP.NotifyQuantity
+";
+
+    var Reminders = DBHelper.QueryList(reminderquery);
+}
+
+<style>
+    /*table td {
+            border: 1px solid grey !important;
+        }
+
+        table th {
+            border: 1px solid grey !important;
+        }*/
+
+
+
+    /*.btn-primary {
+        background: rgba(0,0,0,.22) !important;
+        border: 1px solid rgba(0,0,0,.22);
+    }*/
+
+</style>
+
+
+
+<div id="sb-site" style="height:100% !important;">
+    <div class="sb-slidebar bg-black sb-right sb-style-overlay">
+        <div class="scrollable-content scrollable-slim-sidebar">
+            <div class="pad15A">
+                <a href="#" title="" data-toggle="collapse" data-target="#sidebar-toggle-1" class="popover-title">Cloud status <span class="caret"></span></a>
+                <div id="sidebar-toggle-1" class="collapse in">
+                    <div class="pad15A">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="text-center font-gray pad5B text-transform-upr font-size-12">New visits</div>
+                                <div class="chart-alt-3 font-gray-dark" data-percent="55"><span>55</span>%</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center font-gray pad5B text-transform-upr font-size-12">Bounce rate</div>
+                                <div class="chart-alt-3 font-gray-dark" data-percent="46"><span>46</span>%</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center font-gray pad5B text-transform-upr font-size-12">Server load</div>
+                                <div class="chart-alt-3 font-gray-dark" data-percent="92"><span>92</span>%</div>
+                            </div>
+                        </div>
+                        <div class="divider mrg15T mrg15B"></div>
+                        <div class="text-center"><a href="#" class="btn center-div btn-info mrg5T btn-sm text-transform-upr updateEasyPieChart"><i class="glyph-icon icon-refresh"></i> Update charts</a></div>
+                    </div>
+                </div>
+                <div class="clear"></div><a href="#" title="" data-toggle="collapse" data-target="#sidebar-toggle-6" class="popover-title">Latest transfers <span class="caret"></span></a>
+                <div id="sidebar-toggle-6" class="collapse in">
+                    <ul class="files-box">
+                        <li>
+                            <i class="files-icon glyph-icon font-red icon-file-archive-o"></i>
+                            <div class="files-content">
+                                <b>blog_export.zip</b>
+                                <div class="files-date"><i class="glyph-icon icon-clock-o"></i> added on <b>22.10.2014</b></div>
+                            </div>
+                            <div class="files-buttons"><a href="#" class="btn btn-xs hover-info tooltip-button" data-placement="left" title="Download"><i class="glyph-icon icon-cloud-download"></i></a> <a href="#" class="btn btn-xs hover-danger tooltip-button" data-placement="left" title="Delete"><i class="glyph-icon icon-times"></i></a></div>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <i class="files-icon glyph-icon icon-file-code-o"></i>
+                            <div class="files-content">
+                                <b>homepage-test.html</b>
+                                <div class="files-date"><i class="glyph-icon icon-clock-o"></i> added <b>19.10.2014</b></div>
+                            </div>
+                            <div class="files-buttons"><a href="#" class="btn btn-xs hover-info tooltip-button" data-placement="left" title="Download"><i class="glyph-icon icon-cloud-download"></i></a> <a href="#" class="btn btn-xs hover-danger tooltip-button" data-placement="left" title="Delete"><i class="glyph-icon icon-times"></i></a></div>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <i class="files-icon glyph-icon font-yellow icon-file-image-o"></i>
+                            <div class="files-content">
+                                <b>monthlyReport.jpg</b>
+                                <div class="files-date"><i class="glyph-icon icon-clock-o"></i> added on <b>10.9.2014</b></div>
+                            </div>
+                            <div class="files-buttons"><a href="#" class="btn btn-xs hover-info tooltip-button" data-placement="left" title="Download"><i class="glyph-icon icon-cloud-download"></i></a> <a href="#" class="btn btn-xs hover-danger tooltip-button" data-placement="left" title="Delete"><i class="glyph-icon icon-times"></i></a></div>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <i class="files-icon glyph-icon font-green icon-file-word-o"></i>
+                            <div class="files-content">
+                                <b>new_presentation.doc</b>
+                                <div class="files-date"><i class="glyph-icon icon-clock-o"></i> added on <b>5.9.2014</b></div>
+                            </div>
+                            <div class="files-buttons"><a href="#" class="btn btn-xs hover-info tooltip-button" data-placement="left" title="Download"><i class="glyph-icon icon-cloud-download"></i></a> <a href="#" class="btn btn-xs hover-danger tooltip-button" data-placement="left" title="Delete"><i class="glyph-icon icon-times"></i></a></div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clear"></div><a href="#" title="" data-toggle="collapse" data-target="#sidebar-toggle-3" class="popover-title">Tasks for today <span class="caret"></span></a>
+                <div id="sidebar-toggle-3" class="collapse in">
+                    <ul class="progress-box">
+                        <li>
+                            <div class="progress-title">New features development <b>87%</b></div>
+                            <div class="progressbar-smaller progressbar" data-value="87">
+                                <div class="progressbar-value bg-azure">
+                                    <div class="progressbar-overlay"></div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="progress-title">Finishing uploading files <b>66%</b></div>
+                            <div class="progressbar-smaller progressbar" data-value="66">
+                                <div class="progressbar-value bg-red">
+                                    <div class="progressbar-overlay"></div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="progress-title">Creating tutorials <b>58%</b></div>
+                            <div class="progressbar-smaller progressbar" data-value="58">
+                                <div class="progressbar-value bg-blue-alt"></div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="progress-title">Frontend bonus theme <b>74%</b></div>
+                            <div class="progressbar-smaller progressbar" data-value="74">
+                                <div class="progressbar-value bg-purple"></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clear"></div><a href="#" title="" data-toggle="collapse" data-target="#sidebar-toggle-4" class="popover-title">Pending notifications <span class="bs-label bg-orange tooltip-button" title="Label example">New</span> <span class="caret"></span></a>
+                <div id="sidebar-toggle-4" class="collapse in">
+                    <ul class="notifications-box notifications-box-alt">
+                        <li>
+                            <span class="bg-purple icon-notification glyph-icon icon-users"></span> <span class="notification-text">This is an error notification</span>
+                            <div class="notification-time">a few seconds ago <span class="glyph-icon icon-clock-o"></span></div><a href="#" class="notification-btn btn btn-xs btn-black tooltip-button" data-placement="left" title="View details"><i class="glyph-icon icon-arrow-right"></i></a>
+                        </li>
+                        <li>
+                            <span class="bg-warning icon-notification glyph-icon icon-ticket"></span> <span class="notification-text">This is a warning notification</span>
+                            <div class="notification-time"><b>15</b> minutes ago <span class="glyph-icon icon-clock-o"></span></div><a href="#" class="notification-btn btn btn-xs btn-black tooltip-button" data-placement="left" title="View details"><i class="glyph-icon icon-arrow-right"></i></a>
+                        </li>
+                        <li>
+                            <span class="bg-green icon-notification glyph-icon icon-random"></span> <span class="notification-text font-green">A success message example.</span>
+                            <div class="notification-time"><b>2 hours</b> ago <span class="glyph-icon icon-clock-o"></span></div><a href="#" class="notification-btn btn btn-xs btn-black tooltip-button" data-placement="left" title="View details"><i class="glyph-icon icon-arrow-right"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loading">
+        <div class="svg-icon-loader"><img src="../../assets/images/svg-loaders/bars.svg" width="40" alt=""></div>
+    </div>
+    <div id="page-wrapper">
+        <div id="mobile-navigation">
+            <button id="nav-toggle" class="collapsed" data-toggle="collapse" data-target="#page-sidebar"><span></span></button>
+        </div>
+
+
+
+        <div id="page-sidebar">
+            <div id="header-logo" style="color:rgb(30,30,41) !important" class="logo-bg">
+                <a href="#/" class="logo-content-big" title="DelightUI">@LayoutData.wb.ProjectTitle</a>
+                <a href="#/" class="logo-content-small" title="DelightUI">@LayoutData.wb.ProjectTitle </a>
+                <a id="close-sidebar" href="#" title="Close sidebar"><i class="glyph-icon icon-outdent"></i></a>
+            </div>
+            <div class="scroll-sidebar" style="background:url('../../Images/ProjectImages/JeansBackground.jpg');background-size:300px ">
+                <ul id="sidebar-menu">
+                    @if (r.CanViewDashboard)
+                    {
+                        <li class="header"><span>Overview</span></li>
+                        <li><a href="@Url.Action("Dashboard", "Admin")" title="Admin Dashboard"><i class="glyph-icon icon-area-chart"></i> <span>Dashboard</span></a></li>
+                    }
+
+                    @if (r.CanViewProduct)
+                    {
+                        <li class="header"><span>Products</span></li>
+                        if (r.CanAddProducts)
+                        {
+                            <li><a href="@Url.Action("AddProduct", "Products")"><i class="glyph-icon icon-cube"></i><span>Add New Product</span></a></li>
+                        }
+                        <li><a href="@Url.Action("Products", "Products")" title="View All Products"><i class="glyph-icon icon-cubes"></i> <span>View Products</span></a></li>
+                        <li><a href="@Url.Action("WishListProducts", "Products")" title="WishList Products"><i class="glyph-icon icon-cubes"></i> <span>Wishlist Products</span></a></li>
+
+                    }
+
+                    @if (r.CanViewStock)
+                    {
+                        <li class="header"><span>Stock</span></li>
+                        if (r.CanAddStock)
+                        {
+                            <li><a href="@Url.Action("AddStock", "Products")" title="Add Stock"><i class="glyph-icon icon-iconic-box"></i><span>Add Stock</span></a></li>
+                        }
+
+                        <li><a href="@Url.Action("ReturnStock", "Products")" title="Return Damaged or Old fashioned Stock"><i class="glyph-icon icon-linecons-truck"></i><span>Return Stock</span></a></li>
+                        <li><a href="@Url.Action("Stock", "Products")" title="See when the product was added or used"><i class="glyph-icon icon-h-square"></i> <span>Stock History</span></a></li>
+                    }
+                    @if (r.CanViewInvoice)
+                    {
+                        <li class="header"><span>Invoice</span></li>
+                        if (r.CanAddInvoice)
+                        {
+                            <li><a href="@Url.Action("Invoice", "Sales")" title="Create Invoice"><i class="glyph-icon icon-file-text-o"></i> <span>Create Invoice</span></a></li>
+                        }
+                        <li><a href="@Url.Action("InvoiceList", "Sales")" title="View All Invoices"><i class="glyph-icon icon-list-ol"></i><span>View All Invoices</span></a></li>
+                    }
+
+
+                    @if (r.CanViewCustomer)
+                    {
+                        <li class="header"><span>Customers</span></li>
+                        if (r.CanAddCustomer)
+                        {
+                            <li><a href="@Url.Action("AddCustomer", "Customer")" title="Add Customer"><i class="glyph-icon icon-user"></i> <span>Add Customer</span></a></li>
+                        }
+                        <li><a href="@Url.Action("CustomerList", "Customer")" title="Customer List"><i class="glyph-icon icon-users"></i><span>View All Customers</span></a></li>
+                    }
+
+
+
+
+                    @if (r.CanViewExpense)
+                    {
+                        <li class="header"><span>Expense</span></li>
+                        if (r.CanAddExpense)
+                        {
+                            <li><a href="@Url.Action("AddExpense", "Expense")" title="Add Expense"><i class="glyph-icon icon-money"></i> <span>Add Expense</span></a></li>
+                        }
+                        <li><a href="@Url.Action("ExpenseList", "Expense")" title="Expense List"><i class="glyph-icon icon-list-ul"></i><span>View All Expenses</span></a></li>
+                    }
+
+                    @if (r.CanViewFormulas)
+                    {
+                        <li class="header"><span>Formulas</span></li>
+                        if (r.CanAddFormulas)
+                        {
+                            <li><a href="@Url.Action("AddFormula", "Formula")" title="Add Formula"><i class="glyph-icon icon-money"></i> <span>Add Formula</span></a></li>
+                        }
+                        <li><a href="@Url.Action("FormulaList", "Formula")" title="Formula List"><i class="glyph-icon icon-list-ul"></i><span>View All Formulas</span></a></li>
+
+                    }
+
+
+                    @if (r.CanViewDispute)
+                    {
+                        <li class="header"><span>Dispute</span></li>
+                        <li><a href="@Url.Action("DisputeList", "Dispute")" title="Customer List"><i class="glyph-icon icon-legal"></i><span>View All Disputes</span></a></li>
+                    }
+
+
+
+                    @if (r.CanViewUsers)
+                    {
+                        <li class="header"><span>Users</span></li>
+
+                        <li><a href="@Url.Action("UserList", "User")" title="View All Users"><div class="glyph-icon icon-elusive-group"></div><span>Users</span></a></li>
+                        if (r.CanAddUsers)
+                        {
+                            <li><a href="@Url.Action("AddUser", "User")" title="Create New User"><div class="glyph-icon icon-elusive-user" title="Add User" data-original-title="Add User"></div><span>Add User</span></a></li>
+                        }
+
+
+                    }
+
+                    @if (r.CanViewRoles)
+                    {
+                        <li class="header"><span>Roles</span></li>
+                        <li><a href="@Url.Action("RoleList", "Role")" title="View All Roles"><i class="glyph-icon icon-linecons-user"></i><span>Roles</span></a></li>
+                        if (r.CanAddRoles)
+                        {
+                            <li><a href="@Url.Action("AddRole", "Role")" title="Create New Role"><i class="glyph-icon icon-linecons-key"></i><span>Create New Role</span></a></li>
+                        }
+
+
+                    }
+                    @if (r.CanViewCheque)
+                    {
+
+                        <li class="header"><span>Cheques</span></li>
+                        <li><a href="@Url.Action("ChequeList", "Payments")" title="View All Cheques"><i class="glyph-icon icon-linecons-money"></i><span>Cheque List</span></a></li>
+
+                    }
+
+
+
+
+                    @if (r.CanChangeProductSettings)
+                    {
+                        <li class="header"><span>Settings</span></li>
+                        <li>
+                            <a href="javascript:void(0);" title="Elements"><i class="glyph-icon icon-gears"></i><span>Product Settings</span></a>
+                            <div class="sidebar-submenu">
+                                <ul>
+                                    <li><a href="@Url.Action("Categories","Category")" title="Categories"><span>Categories</span></a></li>
+                                   
+                                </ul>
+                            </div>
+                        </li>
+                    }
+
+                    @if (r.CanChangeBranding)
+                    {
+                        <li><a href="@Url.Action("ProjectSetting","Settings")" title="Settings"><i class="glyph-icon icon-gear"></i><span>Other settings</span></a></li>
+                    }
+
+                    <li><a href="#/"></a></li>
+                    <li><a href="#/"></a></li>
+                    <li><a href="#/"></a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="page-content-wrapper">
+            <div id="page-content" style="background-image:url('../../Images/ProjectImages/page-content.jpg');background-size:100px 300px">
+                <div id="page-header" style="background-size:100px 300px;background-color:rgb(30,30,41)">
+                    <div id="header-nav-left">
+                        <a class="header-btn" id="logout-btn" href="@Url.Action("Logout","Account")" title="Logout"><i class="glyph-icon icon-linecons-lock"></i></a>
+                        <div class="user-account-btn dropdown">
+                            <a href="#" title="My Account" class="user-profile clearfix" style="color:white" data-toggle="dropdown">
+                                @if (!string.IsNullOrWhiteSpace(LayoutData.wb.ProjectImagePath))
+                                {
+                                    <img width="28" src="@Url.Content(LayoutData.wb.ProjectImagePath)" alt="Profile image">
+                                }
+                                <span>@user.FirstName @user.LastName</span> <i class="glyph-icon icon-angle-down"></i>
+                            </a>
+                            <div class="dropdown-menu float-right">
+                                <div class="box-sm">
+                                    <div class="login-box clearfix">
+                                        <div class="user-img">
+                                            <a href="#" title="" class="change-img">Change photo</a>
+                                            @if (!string.IsNullOrWhiteSpace(LayoutData.wb.ProjectImagePath))
+                                            {
+                                                <img src="@Url.Content(LayoutData.wb.ProjectImagePath)" alt="">
+                                            }
+                                        </div>
+                                        <div class="user-info">
+                                            <span>@user.FirstName @user.LastName<i>@user.Type</i></span>
+                                            <a href="#" title="Edit profile">Edit profile</a>
+                                        </div>
+                                    </div>
+                                    <div class="divider"></div>
+                                    <div class="button-pane button-pane-alt pad5L pad5R text-center"><a href="@Url.Action("Logout", "Account")" class="btn btn-flat display-block font-normal btn-danger"><i class="glyph-icon icon-power-off"></i> Logout</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="header-nav-right">
+                        @*<div class="dropdown" id="dashnav-btn">
+                                <a href="#" data-toggle="dropdown" data-placement="bottom" class="popover-button-header tooltip-button" title="" data-original-title="Dashboard Quick Menu"><i class="glyph-icon icon-linecons-cog"></i></a>
+                                <div class="dropdown-menu float-left">
+                                    <div class="box-sm">
+                                        <div class="pad5T pad5B pad10L pad10R dashboard-buttons clearfix"><a href="#" class="btn vertical-button hover-blue-alt" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-dashboard opacity-80 font-size-20"></i></span> Dashboard</a> <a href="#" class="btn vertical-button hover-green" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-tags opacity-80 font-size-20"></i></span> Widgets</a> <a href="#" class="btn vertical-button hover-orange" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-fire opacity-80 font-size-20"></i></span> Tables</a> <a href="#" class="btn vertical-button hover-orange" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-bar-chart-o opacity-80 font-size-20"></i></span> Charts</a> <a href="#" class="btn vertical-button hover-purple" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-laptop opacity-80 font-size-20"></i></span> Buttons</a> <a href="#" class="btn vertical-button hover-azure" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-code opacity-80 font-size-20"></i></span> Panels</a></div>
+                                        <div class="divider"></div>
+                                        <div class="pad5T pad5B pad10L pad10R dashboard-buttons clearfix"><a href="#" class="btn vertical-button remove-border btn-info" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-dashboard opacity-80 font-size-20"></i></span> Dashboard</a> <a href="#" class="btn vertical-button remove-border btn-danger" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-tags opacity-80 font-size-20"></i></span> Widgets</a> <a href="#" class="btn vertical-button remove-border btn-purple" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-fire opacity-80 font-size-20"></i></span> Tables</a> <a href="#" class="btn vertical-button remove-border btn-azure" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-bar-chart-o opacity-80 font-size-20"></i></span> Charts</a> <a href="#" class="btn vertical-button remove-border btn-yellow" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-laptop opacity-80 font-size-20"></i></span> Buttons</a> <a href="#" class="btn vertical-button remove-border btn-warning" title=""><span class="glyph-icon icon-separator-vertical pad0A medium"><i class="glyph-icon icon-code opacity-80 font-size-20"></i></span> Panels</a></div>
+                                    </div>
+                                </div>
+                            </div>*@
+                        <a href="#" class="hdr-btn" id="fullscreen-btn" title="Fullscreen"><i class="glyph-icon icon-arrows-alt"></i></a>
+
+                        <div class="dropdown" id="notifications-btn">
+                            <a data-toggle="dropdown" href="#" title="">
+                                @if (Reminders.Count > 0)
+                                {
+                                    <span class="small-badge bg-red" id="ReminderBadge"></span>
+                                }
+                                <i class="glyph-icon icon-bell-o"></i>
+                            </a>
+                            <div class="dropdown-menu box-md float-left">
+                                <div class="popover-title display-block clearfix pad10A">Reminders @*<a class="text-transform-cap font-primary font-normal btn-link float-right" href="#" title="View more options">More options...</a>*@</div>
+                                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 250px;">
+                                    <div class="scrollable-content scrollable-slim-box" style="width: auto; height: 250px;">
+                                        <ul class="no-border notifications-box">
+                                            @foreach (var element in Reminders)
+                                            {
+                                                <li>
+                                                    <span class="notification-text"><i class="bg-error icon-notification glyph-icon icon-bell-o"></i>@Html.Raw(element["Description"])</span>
+                                                </li>
+                                            }
+
+                                        </ul>
+                                    </div>
+                                    <div class="slimScrollBar" style="background: rgb(141, 160, 170); width: 6px; position: absolute; top: 0px; opacity: 0.4; display: block; border-radius: 7px; z-index: 99; right: 1px;"></div>
+                                    <div class="slimScrollRail" style="width: 6px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        @*<div class="dropdown" id="notifications-btn">
+                                <a data-toggle="dropdown" href="#" title="" aria-expanded="false"><span class="small-badge bg-yellow"></span> <i class="glyph-icon icon-linecons-megaphone"></i></a>
+                                <div class="dropdown-menu box-md float-left" style="display: none;">
+                                    <div class="popover-title display-block clearfix pad10A">Notifications <a class="text-transform-cap font-primary font-normal btn-link float-right" href="#" title="View more options">More options...</a></div>
+                                    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 250px;">
+                                        <div class="scrollable-content scrollable-slim-box" style="overflow: hidden; width: auto; height: 250px;">
+                                            <ul class="no-border notifications-box">
+                                                <li>
+                                                    <span class="bg-danger icon-notification glyph-icon icon-bullhorn"></span> <span class="notification-text">This is an error notification</span>
+                                                    <div class="notification-time">a few seconds ago <span class="glyph-icon icon-clock-o"></span></div>
+                                                </li>
+                                                <li>
+                                                    <span class="bg-warning icon-notification glyph-icon icon-users"></span> <span class="notification-text font-blue">This is a warning notification</span>
+                                                    <div class="notification-time"><b>15</b> minutes ago <span class="glyph-icon icon-clock-o"></span></div>
+                                                </li>
+                                                <li>
+                                                    <span class="bg-green icon-notification glyph-icon icon-sitemap"></span> <span class="notification-text font-green">A success message example.</span>
+                                                    <div class="notification-time"><b>2 hours</b> ago <span class="glyph-icon icon-clock-o"></span></div>
+                                                </li>
+                                                <li>
+                                                    <span class="bg-azure icon-notification glyph-icon icon-random"></span> <span class="notification-text">This is an error notification</span>
+                                                    <div class="notification-time">a few seconds ago <span class="glyph-icon icon-clock-o"></span></div>
+                                                </li>
+                                                <li>
+                                                    <span class="bg-warning icon-notification glyph-icon icon-ticket"></span> <span class="notification-text">This is a warning notification</span>
+                                                    <div class="notification-time"><b>15</b> minutes ago <span class="glyph-icon icon-clock-o"></span></div>
+                                                </li>
+                                                <li>
+                                                    <span class="bg-blue icon-notification glyph-icon icon-user"></span> <span class="notification-text font-blue">Alternate notification styling.</span>
+                                                    <div class="notification-time"><b>2 hours</b> ago <span class="glyph-icon icon-clock-o"></span></div>
+                                                </li>
+                                                <li>
+                                                    <span class="bg-purple icon-notification glyph-icon icon-user"></span> <span class="notification-text">This is an error notification</span>
+                                                    <div class="notification-time">a few seconds ago <span class="glyph-icon icon-clock-o"></span></div>
+                                                </li>
+                                                <li>
+                                                    <span class="bg-warning icon-notification glyph-icon icon-user"></span> <span class="notification-text">This is a warning notification</span>
+                                                    <div class="notification-time"><b>15</b> minutes ago <span class="glyph-icon icon-clock-o"></span></div>
+                                                </li>
+                                                <li>
+                                                    <span class="bg-green icon-notification glyph-icon icon-user"></span> <span class="notification-text font-green">A success message example.</span>
+                                                    <div class="notification-time"><b>2 hours</b> ago <span class="glyph-icon icon-clock-o"></span></div>
+                                                </li>
+                                                <li>
+                                                    <span class="bg-purple icon-notification glyph-icon icon-user"></span> <span class="notification-text">This is an error notification</span>
+                                                    <div class="notification-time">a few seconds ago <span class="glyph-icon icon-clock-o"></span></div>
+                                                </li>
+                                                <li>
+                                                    <span class="bg-warning icon-notification glyph-icon icon-user"></span> <span class="notification-text">This is a warning notification</span>
+                                                    <div class="notification-time"><b>15</b> minutes ago <span class="glyph-icon icon-clock-o"></span></div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="slimScrollBar" style="background: rgb(141, 160, 170); width: 6px; position: absolute; top: 0px; opacity: 0.4; display: block; border-radius: 7px; z-index: 99; right: 1px;"></div>
+                                        <div class="slimScrollRail" style="width: 6px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div>
+                                    </div>
+                                    <div class="button-pane button-pane-alt pad5T pad5L pad5R text-center"><a href="#" class="btn btn-flat btn-primary" title="View all notifications">View all notifications</a></div>
+                                </div>
+                            </div>*@
+
+
+                        <div class="dropdown" id="notifications-btn">
+                            <a data-toggle="dropdown" href="#" title="">
+                                <div class="glyph-icon icon-linecons-globe" title=""></div>
+                            </a>
+                            <div class="dropdown-menu box-md float-left">
+                                <div class="popover-title display-block clearfix pad10A">Notifications @*<a class="text-transform-cap font-primary font-normal btn-link float-right" href="#" title="View more options">More options...</a>*@</div>
+                                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 250px;">
+                                    <div class="scrollable-content scrollable-slim-box" style="width: auto; height: 250px;">
+                                        <ul class="no-border notifications-box">
+                                            @foreach (var element in messages)
+                                            {
+                                                <li id="Notification_@element.ID">
+                                                    <div class="row">
+                                                        <div class="col-md-10">
+                                                            <span class="notification-text"><i class="bg-@element.MessageType.ToLower() icon-notification glyph-icon icon-bell-o"></i> @Html.Raw(element.Description)</span>
+                                                            <div class="notification-time">@Common.TimeAgo(element.TimeStamp)<span class="glyph-icon icon-clock-o"></span></div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <a href="#/" data-id="@element.ID" class="ReadNotificationBtn">&times;</a>
+                                                        </div>
+                                                    </div>
+
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                    <div class="slimScrollBar" style="background: rgb(141, 160, 170); width: 6px; position: absolute; top: 0px; opacity: 0.4; display: block; border-radius: 7px; z-index: 99; right: 1px;"></div>
+                                    <div class="slimScrollRail" style="width: 6px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div>
+                                </div>
+                                <div class="button-pane button-pane-alt pad5T pad5L pad5R text-center"><a href="#" class="btn btn-flat btn-primary" title="View all notifications">View all notifications</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @RenderBody()
+
+
+
+                @section ViewScript{
+                    @RenderSection("ViewScript", false)
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

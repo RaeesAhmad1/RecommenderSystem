@@ -1,0 +1,147 @@
+﻿@model IEnumerable<InventoryManagement.Models.DBModels.Role>
+@using InventoryManagement.Models.DBModels;
+
+@{
+    ViewBag.Title = "RoleList";
+    Layout = "~/Views/Shared/_PanelLayout.cshtml";
+    Role role = Session["Role"] as Role;
+}
+
+@if (role.CanViewRoles)
+{
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="example-box-wrapper">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3 class="title-hero">Role Details</h3>
+                            </div>
+
+                            @if (role.CanAddRoles)
+                            {
+                                <div class="col-md-6">
+                                    <div class="pull-right">
+                                        <a href="@Url.Action("AddRole","Role")" class="btn btn-primary" id="AddRoleBtn">Add Role
+                                            <div class="ripple-wrapper"></div>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                        <div id="datatable-responsive_wrapper" class="dataTables_wrapper form-inline">
+                            <table id="UserList" class="table table-striped table-bordered responsive DataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Products</th>
+                                        <th>Invoices</th>
+                                        <th>Customers</th>
+                                        <th>Stocks</th>
+                                        <th>Users</th>
+                                        <th>Roles</th>
+                                        <th>Expense</th>
+                                        <th>Dispute</th>
+                                        <th>Others</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                        <td>
+                                            View  : @((item.CanViewProduct) ? @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") : @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Add  :  @((item.CanAddProducts) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Edit  : @((item.CanUpdateProduct) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Delete  : @((item.CanDeleteProduct) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                        </td>
+                                        <td>
+                                            View : @((item.CanViewInvoice) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Add : @((item.CanAddInvoice) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Edit : @((item.CanUpdateInvoice) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Delete : @((item.CanDeleteInvoice) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Return : @((item.CanReturnInvoice) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                        </td>
+
+                                        <td>
+                                            View : @((item.CanViewCustomer) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Add : @((item.CanAddCustomer) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Edit : @((item.CanUpdateCustomer) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Delete : @((item.CanDeleteCustomer) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                        </td>
+                                        <td>
+                                            View : @((item.CanViewStock) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Add : @((item.CanAddStock) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Edit : @((item.CanUpdateStock) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Delete : @((item.CanDeleteStock) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                        </td>
+                                        <td>
+                                            View : @((item.CanViewUsers) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Add : @((item.CanAddUsers) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Edit : @((item.CanUpdateUsers) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Delete : @((item.CanDeleteUsers) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+
+                                        </td>
+                                        <td>
+                                            View : @((item.CanViewRoles) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Add : @((item.CanAddRoles) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Edit : @((item.CanUpdateRoles) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Delete : @((item.CanDeleteRoles) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                        </td>
+                                        <td>
+                                            View : @((item.CanViewExpense) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Add : @((item.CanAddExpense) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Edit : @((item.CanUpdateExpense) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Delete : @((item.CanDeleteExpense) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                        </td>
+
+                                        <td>
+                                            View : @((item.CanViewDispute) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Resolve : @((item.CanResolveDispute) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                        </td>
+
+                                        <td>
+                                            View Dashboard : @((item.CanViewDashboard) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                            Product Settings : @((item.CanChangeProductSettings) ?  @Html.Raw("<i class='glyph-icon icon-check' style='color:#4CAF50'></i>") :  @Html.Raw("<i class='glyph-icon icon-times' style='color:#F44336'></i>")) <br>
+                                        </td>
+
+                                        <td>
+                                            @if (role.CanUpdateRoles)
+        {
+                                    <a href="@Url.Action("AddRole", "Role", new { id = item.ID })"><i style="color:blue" class="glyph-icon tooltip-button icon-pencil-square-o" title="" data-original-title="Edit" aria-describedby="tooltip854738"></i></a>
+}
+                                            @if (role.CanDeleteRoles)
+        {
+                                    <a role="button" data-id="@item.ID" class="DeleteProductBtn" href="#/"><i style="color:red" class="glyph-icon tooltip-button icon-trash" title="" data-original-title="Delete" aria-describedby="tooltip991223"></i></a>
+}
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section ViewScript{
+    <script>
+        $(".DeleteProductBtn").click(function () {
+            var id = $(this).data("id");
+            $.post("/Role/DeleteRole", { ID: id }).then(function () {
+                window.location.reload();
+            });
+
+        });
+    </script>    
+    }

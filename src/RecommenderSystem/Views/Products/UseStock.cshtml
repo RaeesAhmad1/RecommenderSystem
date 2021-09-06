@@ -1,0 +1,87 @@
+﻿@model InventoryManagement.ViewModels.AddStock_VM
+@using InventoryManagement.Models.DBModels
+@{
+
+    ViewBag.Title = "Usetock";
+    Layout = "~/Views/Shared/_PanelLayout.cshtml";
+
+    string id = Request.QueryString["ID"];
+
+}
+<div class="panel">
+    <div class="panel-body">
+        <h3 class="title-hero">Products</h3>
+        <div class="example-box-wrapper">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal">
+                    @{
+                        <h4>Use Stock </h4>
+                        <hr />
+                        int i = 0;
+                        foreach (var product in Model.ProductList)
+                        {
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <h4>@product.Product.Name</h4>
+                            <table class="table table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th><label>Type</label></th>
+                                        <th><label>Per Piece</label></th>
+                                        <th><label>Price Per Piece</label></th>
+                                        <th><label>Quantity Left</label></th>
+                                        <th><label>Unit</label></th>
+                                        <th><label>Amount to Use</label></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var packaging in product.Packaging)
+                                    {
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" name="PackagingList[@i].ProductID" value="@product.Product.ID" />
+                                            <input type="hidden" name="PackagingList[@i].PackagingID" value="@packaging.PackagingID">
+                                            <input type="hidden" name="PackagingList[@i].PackageSize" value="@packaging.PackageSize" />
+                                            @packaging.PackagingName
+                                        </td>
+                                        <td>@packaging.PackageSize</td>
+                                        <td>@packaging.PricePerPiece</td>
+                                        <td>@packaging.Quantity</td>
+                                        <td>@packaging.Unit</td>
+                                        <td><input type="text" class="form-control" value="" placeholder="Quantity" name="PackagingList[@i].Quantity" /></td>
+                                    </tr>
+                                        i++;
+                                    }
+
+                                </tbody>
+                            </table>
+                        }
+                    }
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="pull-left">
+                            <a href="@Url.Action("Products","Products")">Back to List</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="pull-right">
+                            <input type="submit" value="Update Stock" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+@section ViewScript{
+    <script>
+
+    </script>
+}
